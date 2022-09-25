@@ -1,7 +1,7 @@
 # Setup Instructions
 
 #### 0. Clone this repository somewhere.
-- Run `git clone https://github.com/wdingocoin/wdingocoin.git wdingocoin`. This creates a `wdingocoin` folder containing the files necessary for running the authority node.
+- Run `git clone https://github.com/dingocoin/wdingocoin.git`. This creates a `wdingocoin` folder containing the files necessary for running the authority node.
 - Make sure it is cloned, and not just downloaded. We need the .git metadata for version tracking.
 
 #### 1. Add Change address to dingo wallet:
@@ -60,24 +60,28 @@
 - `sudo npm install -g yarn`
 - `cd wdingocoin`; `yarn install`
 
-#### 6. Ensure that port 32533 is open. Use https://www.yougetsignal.com/tools/open-ports/ to check that port 32533 on your node can be reached with the authority daemon running. If not, check your firewall/VPS provider/ISP settings to make sure that port 32533 is not blocked.
+#### 6. Ensure that port ~~32533~~ 8443 is open. Use https://www.yougetsignal.com/tools/open-ports/ to check that port 8443 on your node can be reached with the authority daemon running. If not, check your firewall/VPS provider/ISP settings to make sure that port 8443 is not blocked.
 
 #### 7. Launch dingo daemon and authority daemon.
-- `dingod`
-- `cd wdingocoin`; `nodejs authorityDaemon.js` (If `nodejs authorityDaemon.js` does not work, try `node authorityDaemon.js`).
-- You can run these daemons in a `tmux`. This allows you to leave the SSH session while still running and recording stdout/stderr debug messages in the background.
+- In the appropriate directory, `./dingod -daemon` or if running this (as below) in `tmux` or `screen`, you may leave the ` -daemon` out.
+- In your wdingocoin directory, `node authorityDaemon.js` (If `node authorityDaemon.js` does not work, try `nodejs authorityDaemon.js`).
+- You can run these daemons in a `tmux` or in `screen`. This allows you to leave the SSH session while still running and recording stdout/stderr debug messages in the background.
 
-#### 8. Users access the system via the [web application](https://wdingocoin.github.io/wdingocoin-frontend/), whose source code can be found [here](https://github.com/wdingocoin/wdingocoin-frontend). The web application interacts directly with the authority nodes. Alternatively you use the CLI (`nodejs cli.js`; `help`) to interact with the authority nodes.
+#### 8. Users access the system via the [web application](https://wrap.dingocoin.org/). The original repository's Github Pages [web application](https://wdingocoin.github.io/wdingocoin-frontend/) also redirects here. The source code can be found [here](https://github.com/dingocoin/wdingocoin-frontend). The web application interacts directly with the authority nodes. Alternatively you use the CLI (`node cli.js`; `help`) to interact with the authority nodes.
 
-# Optional Steps:
+# Checking consensus among the authority nodes :
 
 #### Verifying shared credentials
 - In `wdingocoin/settings/public.json`, check that the IP locations and BSC wallet addresses of every node match the collected list.
-- In `wdingocoin/settings/dingo.json`, check that the change address matches the one computed in step 1 (`9rUZv4sr7pgqhmw7Q9XLDb42w9EcUkUZCc`), and that the tax payour addresses match the collected list.
+- In `wdingocoin/settings/dingo.json`, check that the change address matches the one computed in step 1 (`9rUZv4sr7pgqhmw7Q9XLDb42w9EcUkUZCc`), and that the tax payout addresses match the collected list.
 - In `wdingocoin/settings/smartContract.js`, check that the contractAddress is what has just been published, `0x9b208b117B2C4F76C1534B6f006b033220a681A4`.
+- The above is easily done via the `consensus` command run inside cli.js
+    - `node cli.js`
+    - `consensus`
+    - When finished, you may close the consensus window with `.exit`
 
 #### Verifying smart contract
 - You can explore the BSC Smart Contract here: `https://bscscan.com/token/0x9b208b117B2C4F76C1534B6f006b033220a681A4`. For the folks who are new to this, this is basically like blockexplorer but you see all interactions with the smart contract.
 - The Smart Contract source code has been uploaded and verified here: `https://bscscan.com/address/0x9b208b117B2C4F76C1534B6f006b033220a681A4#code`.
-- Verify that the `_authorityAddresses` (Line 122) has been set to the BSC wallet addresses in the collected list.
+- Verify that the `_authorityAddresses` (Line 203) has been set to the BSC wallet addresses in the collected list.
 - If you are up for it, you can read through the smartContract to verify the multisignature design.
