@@ -1,10 +1,10 @@
 # wDingocoin Decentralized Custodian
 
-The wDingocoin Decentralized Cusodian (wDDC) is a system to wrap coins from the Dingocoin Mainnet to the BSC Smart Chain, and vice versa.  It consists of a _BSC smart contract_ of the wrapped coin, and multiple _authority nodes_ who must jointly verify and sign every single conversion between the two networks. This decentralized system ensures the integrity and security of the wrapped coin.
+The wDingocoin Decentralized Custodian (wDDC) is a system to wrap coins from the Dingocoin Mainnet to the BSC Smart Chain, and vice versa.  It consists of a _BSC smart contract_ of the wrapped coin, and multiple _authority nodes_ who must jointly verify and sign every single conversion between the two networks. This decentralized system ensures the integrity and security of the wrapped coin.
 
 The files in this repository are used to run the authority node. Setup instructions for the authority node can be found in [INSTRUCTIONS.md](INSTRUCTIONS.md).
 
-Users access the system via the [web application](https://wdingocoin.github.io/wdingocoin-frontend/), whose source code can be found [here](https://github.com/wdingocoin/wdingocoin-frontend). The web application interacts directly with the authority nodes. A CLI version is planned for the future.
+Users access the system via the [web application](https://wrap.dingocoin.org/). The original repository's Github Pages [web application](https://wdingocoin.github.io/wdingocoin-frontend/) also redirects here. The source code can be found [here](https://github.com/dingocoin/wdingocoin-frontend). The web application interacts directly with the authority nodes.  Alternatively you use the CLI (`node cli.js`; `help`) to interact with the authority nodes.
 
 ### Converting from Dingocoin Mainnet -> BSC Smart Chain
 
