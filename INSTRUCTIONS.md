@@ -1,7 +1,7 @@
 # Setup Instructions
 
 #### 0. Clone this repository somewhere.
-- Run `git clone https://github.com/dingocoin/wdingocoin.git`. This creates a `wdingocoin` folder containing the files necessary for running the authority node.
+- Run `git clone https://github.com/dingocoin/wdingocoin-bsc.git`. This creates a `wdingocoin-bsc` folder containing the files necessary for running the authority node.
 - Make sure it is cloned, and not just downloaded. We need the .git metadata for version tracking.
 
 #### 1. Add Change address to dingo wallet:
