@@ -547,6 +547,7 @@ Available commands:
           (new Date(stat.version.timestamp)).toUTCString(),
           stat.version.clean ? 'Yes' : 'No',
           stat.version.dingoVersion === undefined ? '' : stat.version.dingoVersion.toString(),
+          stat.height,
           stat.time === undefined ? '' : (new Date(stat.time).toUTCString())
         ]);
       }
