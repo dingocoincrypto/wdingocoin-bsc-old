@@ -158,6 +158,8 @@ function isObject(x) {
     dingoVersion: await dingo.getClientVersion()
   };
 
+  const height = await dingo.getBlockCount();
+
   const app = express();
   app.use(cors());
   app.use(express.json());
@@ -357,6 +359,7 @@ function isObject(x) {
         if (stats === null || ((new Date()).getTime() - stats.time) >= 1000 * 60 * 10) {
           stats = {
             version: version,
+            height: height,
             time: (new Date()).getTime(),
             publicSettings: publicSettings,
             dingoSettings: dingoSettings,

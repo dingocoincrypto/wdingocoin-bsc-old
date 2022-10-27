@@ -558,6 +558,7 @@ Available commands:
       { alias: 'Commit Timestamp' },
       { alias: 'Clean', formatter: function (x) { return x === 'Yes' ? this.style('YES', 'bgGreen', 'black') :  this.style('NO', 'bgRed', 'black'); }  },
       { alias: 'Dingo Version' },
+      { alias: 'Height' },
       { alias: 'Stats Time'}
     ];
     const versionFooter = ['Consensus']
