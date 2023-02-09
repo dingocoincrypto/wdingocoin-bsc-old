@@ -7,7 +7,7 @@ const Web3 = require('web3');
 const os = require("os");
 const sort = require('fast-sort').sort;
 
-const DINGO_COOKIE_PATH = '~/.dingocoin/.cookie'.replace('~', os.homedir);
+const DINGO_COOKIE_PATH = '~/.dingocoin/testnet1/.cookie'.replace('~', os.homedir);
 const DINGO_PORT = 34646;
 
 module.exports = {
