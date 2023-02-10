@@ -16,6 +16,7 @@ module.exports = {
   walletPassphrase,
   verifyAddress,
   getClientVersion,
+  getBlockCount,
   getBlockchainInfo,
   getTxOutSetInfo,
   getBlockHash,
@@ -87,6 +88,10 @@ async function verifyAddress(address) {
 
 async function getClientVersion() {
   return (await callRpc('getinfo', [])).version;
+}
+
+async function getBlockCount() {
+  return (await callRpc('getblockcount', []));
 }
 
 function getBlockchainInfo() {
