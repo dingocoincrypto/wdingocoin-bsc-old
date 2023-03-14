@@ -641,6 +641,9 @@ function isObject(x) {
 
     // Compute change.
     const totalUnspent = unspent.reduce((a, b) => a + BigInt(dingo.toSatoshi(b.amount.toString())), BigInt(0));
+    if(totalUnspent === 0) {
+      throw new Error('totalUnspent is 0! is change address latest utxo mature? (120 confirms)')
+    }
     const change = totalUnspent - totalPayout - networkFee; // Rounding errors from taxPayout / N is absorbed into change here.
     if (change < 0) {
       throw new Error('Insufficient funds');
