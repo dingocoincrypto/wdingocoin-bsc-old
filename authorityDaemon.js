@@ -88,7 +88,7 @@ function isObject(x) {
       link,
       {
         json: data,
-        timeout: { request: 5000 }
+        timeout: { request: 60000 }
       }).json();
     return r;
   }
