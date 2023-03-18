@@ -88,7 +88,7 @@ function isObject(x) {
       link,
       {
         json: data,
-        timeout: { request: 5000 }
+        timeout: { request: 15000 }
       }).json();
     return r;
   }
@@ -547,6 +547,8 @@ function isObject(x) {
     }
     // Compute unapproved withdrawal payouts and tax from withdrawals.
     for (const i in withdrawalPayouts) {
+      console.log(withdrawalPayouts[i].burnAddress)
+      console.log(withdrawalPayouts[i].burnIndex)
       const burnAddress = withdrawalPayouts[i].burnAddress;
       const burnIndex = withdrawalPayouts[i].burnIndex;
       if (burnAddress !== withdrawalTaxPayouts[i].burnAddress || burnIndex !== withdrawalTaxPayouts[i].burnIndex) {
@@ -560,6 +562,8 @@ function isObject(x) {
         throw new Error('Withdrawal already approved');
       }
       const { burnDestination, burnAmount } = await smartContract.getBurnHistory(burnAddress, burnIndex);
+      console.log(burnDestination)
+      console.log(burnAmount)
       if (withdrawalPayouts[i].burnDestination !== burnDestination) {
         throw new Error('Withdrawal destination incorrect');
       }
@@ -579,17 +583,25 @@ function isObject(x) {
   // Computes UTXOs among deposits and change.
   const computeUnspent = async () => {
     const changeUtxos = await dingo.listUnspent(dingoSettings.changeConfirmations, [dingoSettings.changeAddress]);
+    console.log(changeUtxos)
     const deposited = await dingo.listReceivedByAddress(dingoSettings.depositConfirmations);
+    console.log(deposited)
     const nonEmptyMintDepositAddresses = (await database.getMintDepositAddresses(Object.keys(deposited)));
+    console.log(nonEmptyMintDepositAddresses)
     const depositUtxos = await dingo.listUnspent(dingoSettings.depositConfirmations, nonEmptyMintDepositAddresses.map((x) => x.depositAddress));
+    console.log(depositUtxos)
     return changeUtxos.concat(depositUtxos);
   };
+  console.log("1");
   app.post('/computeUnspent',
     createRateLimit(5, 1),
     asyncHandler(async (req, res) => {
+      console.log("running3333")
       const data = await validateTimedAndSignedMessageOne(req.body, publicSettings.authorityNodes.map((x) => x.walletAddress));
       res.send(await createTimedAndSignedMessage({ unspent: await computeUnspent() }));
+      
     }));
+    console.log("2");
 
   // Checks if UTXOs exist among deposits and change.
   const validateUnspent = async (unspent) => {

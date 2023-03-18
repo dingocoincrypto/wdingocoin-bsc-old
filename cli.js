@@ -73,12 +73,14 @@ function parseBool(s) {
     if (!isObject(x)) {
       throw new Error(`Cannot sign non-object ${JSON.stringify(x)}`);
     }
+    console.log("running2");
     const blockchainInfo = await dingo.getBlockchainInfo();
     x.valDingoHeight = blockchainInfo.blocks - dingoSettings.syncDelayThreshold;
     x.valDingoHash = await dingo.getBlockHash(blockchainInfo.blocks - dingoSettings.syncDelayThreshold);
     return smartContract.createSignedMessage(x);
   }
   const validateTimedAndSignedMessage = async (x, walletAddress, discard=true) => {
+    console.log("running");
     if (!isObject(x.data)) {
       throw new Error('Data is non-object');
     }
@@ -392,9 +394,11 @@ Available commands:
       const { unspent: _unspent } = await validateTimedAndSignedMessage(
           await post(`${getAuthorityLink(node)}/computeUnspent`, await createTimedAndSignedMessage({})),
           node.walletAddress);
+          console.log("running4")
       for (const u of _unspent) {
         console.log(`      ${u.txid} -> ${u.amount}`);
       }
+      console.log("running 3")
       if (unspent === null) {
         unspent = _unspent;
       } else {
