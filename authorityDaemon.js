@@ -332,6 +332,7 @@ function isObject(x) {
 
       const { burnDestination, burnAmount } = await smartContract.getBurnHistory(burnAddress, burnIndex);
       if (!(await dingo.verifyAddress(burnDestination))) {
+        database.deleteSpecificWithdrawal(burnDestination, burnIndex);
         throw new Error('Withdrawal address is not a valid Dingo address');
       }
       if (burnAmount < FLAT_FEE) {

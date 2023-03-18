@@ -24,7 +24,8 @@ module.exports = {
   getWithdrawal,
   getWithdrawals,
   getUnapprovedWithdrawals,
-  updateWithdrawals
+  updateWithdrawals,
+  deleteSpecificWithdrawal
 };
 
 async function dump(path) {
@@ -135,6 +136,18 @@ function getUnapprovedWithdrawals() {
   return util.promisify(db.all.bind(db))(
     `SELECT burnAddress, burnIndex, approvedAmount, approvedTax FROM withdrawals WHERE approvedTax="0"`
   );
+}
+
+async function deleteSpecificWithdrawal(burnAddress, burnIndex) {
+  const deleted = await util.promisify(db.all.bind(db)) (
+    `DELETE FROM withdrawals WHERE burnAddress=? AND burnIndex=?`,
+    [burnAddress, burnIndex]
+  )
+  console.log(deleted)
+}
+
+function createDeletedWithdrawal() {
+  
 }
 
 async function updateWithdrawals(withdrawals) {
