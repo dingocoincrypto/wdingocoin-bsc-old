@@ -162,7 +162,7 @@ function isObject(x) {
 
   const app = express();
   app.use(cors());
-  app.use(express.json());
+  app.use(express.json({limit: '10mb'}));
 
   app.post('/ping', createRateLimit(10, 10), asyncHandler(async (req, res) => {
     res.send(await createTimedAndSignedMessage({ timestamp: Date.now() }));
