@@ -26,6 +26,7 @@ function getAuthorityLink(x) {
 
 const FLAT_FEE = BigInt(dingo.toSatoshi('10'));
 const DUST_THRESHOLD = BigInt(dingo.toSatoshi('1'));
+const MINIMUM_DEPOSIT_AMOUNT = 25000;
 const PAYOUT_NETWORK_FEE_PER_TX = BigInt(dingo.toSatoshi('20')); // Add this to network fee for each deposit / withdrawal.
 
 function meetsTax(x) {
@@ -88,7 +89,7 @@ function isObject(x) {
       link,
       {
         json: data,
-        timeout: { request: 180000 }
+        timeout: { request: 15000 }
       }).json();
     return r;
   }
@@ -162,7 +163,7 @@ function isObject(x) {
 
   const app = express();
   app.use(cors());
-  app.use(express.json({limit: '10mb'}));
+  app.use(express.json({limit: '5mb'}));
 
   app.post('/ping', createRateLimit(10, 10), asyncHandler(async (req, res) => {
     res.send(await createTimedAndSignedMessage({ timestamp: Date.now() }));
@@ -427,8 +428,13 @@ function isObject(x) {
           // Process UTXOs.
           const computeUtxos = async (changeConfirmations, depositConfirmations, output) => {
             const changeUtxos = await dingo.listUnspent(changeConfirmations, [dingoSettings.changeAddress]);
-            const depositUtxos = await dingo.listUnspent(depositConfirmations, depositAddresses.map((x) => x.depositAddress));
+            let depositUtxos = await dingo.listUnspent(depositConfirmations, depositAddresses.map((x) => x.depositAddress));
             output.totalChangeBalance = changeUtxos.reduce((a, b) => a + BigInt(dingo.toSatoshi(b.amount.toString())), 0n).toString();
+            // for(const deposit of depositUtxos) {
+            //   console.log(deposit.address);
+            // }
+            depositUtxos = depositUtxos.filter(deposit => deposit.amount >= MINIMUM_DEPOSIT_AMOUNT);
+            depositUtxos = depositUtxos.filter(deposit => deposit.address != "2MxMRmWcBzh8k25wNmvJPQodKqvyL5kEZKg");
             output.totalDepositsBalance = depositUtxos.reduce((a, b) => a + BigInt(dingo.toSatoshi(b.amount.toString())), 0n).toString();
           };
           await computeUtxos(dingoSettings.changeConfirmations, dingoSettings.depositConfirmations, stats.confirmedUtxos);
@@ -583,6 +589,7 @@ function isObject(x) {
     const depositUtxos = await dingo.listUnspent(dingoSettings.depositConfirmations, nonEmptyMintDepositAddresses.map((x) => x.depositAddress));
     return changeUtxos.concat(depositUtxos);
   };
+
   app.post('/computeUnspent',
     createRateLimit(5, 1),
     asyncHandler(async (req, res) => {
