@@ -383,6 +383,13 @@ function isObject(x) {
           const computeDeposits = async (confirmations, output) => {
             output.count = depositAddresses.length;
             const depositedAmounts = await dingo.getReceivedAmountByAddresses(confirmations, depositAddresses.map((x) => x.depositAddress));
+            for (const key in depositedAmounts) {
+              if (depositedAmounts.hasOwnProperty(key)) {
+                if(key === "2MxMRmWcBzh8k25wNmvJPQodKqvyL5kEZKg") {
+                  delete depositedAmounts[key]
+                }
+              }
+            }
             const totalDepositedAmount = Object.values(depositedAmounts).reduce((a, b) => a + BigInt(dingo.toSatoshi(b.toString())), 0n).toString();
             const totalApprovableTax = Object.values(depositedAmounts).reduce((a, b) => {
               const amount = BigInt(dingo.toSatoshi(b.toString()));
@@ -392,6 +399,13 @@ function isObject(x) {
                 return a;
               }
             }, 0n).toString();
+            for(let i = 0; i <= depositAddresses.length; i++) {
+              for (const key in depositAddresses[i]) {
+                if (depositAddresses[i][key] == "2MxMRmWcBzh8k25wNmvJPQodKqvyL5kEZKg") {
+                    depositAddresses.splice(i, 1)
+                }
+              }
+            }
             const totalApprovedTax = depositAddresses.reduce((a, b) => a + BigInt(b.approvedTax), 0n).toString();
             const remainingApprovableTax = (BigInt(totalApprovableTax) - BigInt(totalApprovedTax)).toString();
 
@@ -586,7 +600,9 @@ function isObject(x) {
     const changeUtxos = await dingo.listUnspent(dingoSettings.changeConfirmations, [dingoSettings.changeAddress]);
     const deposited = await dingo.listReceivedByAddress(dingoSettings.depositConfirmations);
     const nonEmptyMintDepositAddresses = (await database.getMintDepositAddresses(Object.keys(deposited)));
-    const depositUtxos = await dingo.listUnspent(dingoSettings.depositConfirmations, nonEmptyMintDepositAddresses.map((x) => x.depositAddress));
+    let depositUtxos = await dingo.listUnspent(dingoSettings.depositConfirmations, nonEmptyMintDepositAddresses.map((x) => x.depositAddress));
+    depositUtxos = depositUtxos.filter(deposit => deposit.amount >= MINIMUM_DEPOSIT_AMOUNT);
+    depositUtxos = depositUtxos.filter(deposit => deposit.address != "2MxMRmWcBzh8k25wNmvJPQodKqvyL5kEZKg");
     return changeUtxos.concat(depositUtxos);
   };
 
