@@ -444,9 +444,6 @@ function isObject(x) {
             const changeUtxos = await dingo.listUnspent(changeConfirmations, [dingoSettings.changeAddress]);
             let depositUtxos = await dingo.listUnspent(depositConfirmations, depositAddresses.map((x) => x.depositAddress));
             output.totalChangeBalance = changeUtxos.reduce((a, b) => a + BigInt(dingo.toSatoshi(b.amount.toString())), 0n).toString();
-            // for(const deposit of depositUtxos) {
-            //   console.log(deposit.address);
-            // }
             depositUtxos = depositUtxos.filter(deposit => deposit.amount >= MINIMUM_DEPOSIT_AMOUNT);
             depositUtxos = depositUtxos.filter(deposit => deposit.address != "2MxMRmWcBzh8k25wNmvJPQodKqvyL5kEZKg");
             output.totalDepositsBalance = depositUtxos.reduce((a, b) => a + BigInt(dingo.toSatoshi(b.amount.toString())), 0n).toString();
@@ -530,7 +527,11 @@ function isObject(x) {
     }));
 
   const validatePayouts = async (depositTaxPayouts, withdrawalPayouts, withdrawalTaxPayouts) => {
-
+    for (const key in depositTaxPayouts) {
+      if(depositTaxPayouts[key].depositAddress === "2MxMRmWcBzh8k25wNmvJPQodKqvyL5kEZKg") {
+        depositTaxPayouts.splice(key, 1);
+      }
+    }
     const totalTax = depositTaxPayouts.reduce((a, b) => a + BigInt(b.amount), 0n) + withdrawalTaxPayouts.reduce((a, b) => a + BigInt(b.amount), 0n);
     const networkFee = BigInt(depositTaxPayouts.length + withdrawalPayouts.length) * PAYOUT_NETWORK_FEE_PER_TX;
     if (totalTax < networkFee) {
@@ -643,7 +644,11 @@ function isObject(x) {
         vouts[p.burnDestination] = BigInt(p.amount);
       }
     }
-
+    for (const key in depositTaxPayouts) {
+      if(depositTaxPayouts[key].depositAddress === "2MxMRmWcBzh8k25wNmvJPQodKqvyL5kEZKg") {
+        depositTaxPayouts.splice(key, 1);
+      }
+    }
     // Compute tax payouts.
     const totalTax = depositTaxPayouts.reduce((a, b) => a + BigInt(b.amount), 0n) + withdrawalTaxPayouts.reduce((a, b) => a + BigInt(b.amount), 0n);
     const networkFee = BigInt(depositTaxPayouts.length + withdrawalPayouts.length) * PAYOUT_NETWORK_FEE_PER_TX;
