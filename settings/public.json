@@ -2,7 +2,7 @@
   "port": 8443,
   "authorityThreshold": 3,
   "blacklistedAddresses": [
-    ""
+    "2MxMRmWcBzh8k25wNmvJPQodKqvyL5kEZKg"
   ],
   "authorityNodes": [
     {
@@ -26,5 +26,5 @@
       "walletAddress": "0xb37F35DAfd8E5050CC80D9E262ad0176aD19483D"
     }
   ],
-  "payoutCoordinator": 0
+  "payoutCoordinator": 1
 }
