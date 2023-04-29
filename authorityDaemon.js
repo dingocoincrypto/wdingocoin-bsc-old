@@ -332,6 +332,7 @@ function isObject(x) {
 
       const { burnDestination, burnAmount } = await smartContract.getBurnHistory(burnAddress, burnIndex);
       if (!(await dingo.verifyAddress(burnDestination))) {
+        database.deleteSpecificWithdrawal(burnDestination, burnIndex);
         throw new Error('Withdrawal address is not a valid Dingo address');
       }
       if (burnAmount < FLAT_FEE) {
@@ -583,6 +584,7 @@ function isObject(x) {
     const depositUtxos = await dingo.listUnspent(dingoSettings.depositConfirmations, nonEmptyMintDepositAddresses.map((x) => x.depositAddress));
     return changeUtxos.concat(depositUtxos);
   };
+
   app.post('/computeUnspent',
     createRateLimit(5, 1),
     asyncHandler(async (req, res) => {

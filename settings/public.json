@@ -1,6 +1,9 @@
 {
   "port": 8443,
   "authorityThreshold": 3,
+  "blacklistedAddresses": [
+    ""
+  ],
   "authorityNodes": [
     {
       "hostname": "mad1.twinkykms.com",
