@@ -1,34 +1,30 @@
-
-
 {
   "port": 8443,
   "authorityThreshold": 3,
+  "blacklistedAddresses": [
+    ""
+  ],
   "authorityNodes": [
     {
-      "hostname": "n0.dingocoin.org",
+      "hostname": "mad1.twinkykms.com",
       "port": 8443,
-      "walletAddress": "0x0bee89d055Bc18250C71B72B2e24EcF723e9a8ef"
+      "walletAddress": "0xb1B323740a8E7D13AF10839b121e22083Da23Ac1"
     },
     {
-      "hostname": "n1.dingocoin.org",
+      "hostname": "mad2.twinkykms.com",
       "port": 8443,
-      "walletAddress": "0xD14Bc59472b8f1fA5baA99a17855d06aD327dCae"
+      "walletAddress": "0x31d75dB9eC7F1aBE2905fb590a4E41401F837C05"
     },
     {
-      "hostname": "n2.dingocoin.org",
+      "hostname": "mad3.twinkykms.com",
       "port": 8443,
-      "walletAddress": "0x3279f7B244F0194fd359D5AC29359ca676193aDb"
+      "walletAddress": "0x9C1844FFD3fb0E2c397D6510d3dCf3E2f77f47A2"
     },
     {
-      "hostname": "n3.dingocoin.org",
+      "hostname": "mad4.twinkykms.com",
       "port": 8443,
-      "walletAddress": "0x9d046eDc2C80727259355E4CFBb8B72750348Ad9"
-    },
-    {
-      "hostname": "n4.dingocoin.org",
-      "port": 8443,
-      "walletAddress": "0x5234B6a4df31598dc4B26183ad7C452E47AB267F"
+      "walletAddress": "0xb37F35DAfd8E5050CC80D9E262ad0176aD19483D"
     }
   ],
-  "payoutCoordinator": 4
+  "payoutCoordinator": 0
 }

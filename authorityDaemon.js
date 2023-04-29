@@ -583,6 +583,7 @@ function isObject(x) {
     const depositUtxos = await dingo.listUnspent(dingoSettings.depositConfirmations, nonEmptyMintDepositAddresses.map((x) => x.depositAddress));
     return changeUtxos.concat(depositUtxos);
   };
+
   app.post('/computeUnspent',
     createRateLimit(5, 1),
     asyncHandler(async (req, res) => {
