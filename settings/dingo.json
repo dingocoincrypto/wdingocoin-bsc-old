@@ -1,7 +1,7 @@
 {
   "changeAddress": "todo",
-  "changeConfirmations": 100,
-  "depositConfirmations": 120,
+  "changeConfirmations": 5,
+  "depositConfirmations": 10,
   "taxPayoutAddresses": [
     "nmuJyEcZNuCBWpgMXgC87FhxryJBKkYqnw",
     "nVAYYgxJaHzF64tgPfgGi4nszZu14TfjUi",
