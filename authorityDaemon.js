@@ -26,7 +26,6 @@ function getAuthorityLink(x) {
 
 const FLAT_FEE = BigInt(dingo.toSatoshi('10'));
 const DUST_THRESHOLD = BigInt(dingo.toSatoshi('1'));
-const MINIMUM_DEPOSIT_AMOUNT = 25000;
 const PAYOUT_NETWORK_FEE_PER_TX = BigInt(dingo.toSatoshi('20')); // Add this to network fee for each deposit / withdrawal.
 
 function meetsTax(x) {
@@ -89,7 +88,7 @@ function isObject(x) {
       link,
       {
         json: data,
-        timeout: { request: 15000 }
+        timeout: { request: 5000 }
       }).json();
     return r;
   }
@@ -163,7 +162,7 @@ function isObject(x) {
 
   const app = express();
   app.use(cors());
-  app.use(express.json({limit: '5mb'}));
+  app.use(express.json());
 
   app.post('/ping', createRateLimit(10, 10), asyncHandler(async (req, res) => {
     res.send(await createTimedAndSignedMessage({ timestamp: Date.now() }));
@@ -333,6 +332,7 @@ function isObject(x) {
 
       const { burnDestination, burnAmount } = await smartContract.getBurnHistory(burnAddress, burnIndex);
       if (!(await dingo.verifyAddress(burnDestination))) {
+        database.deleteSpecificWithdrawal(burnDestination, burnIndex);
         throw new Error('Withdrawal address is not a valid Dingo address');
       }
       if (burnAmount < FLAT_FEE) {
@@ -383,13 +383,6 @@ function isObject(x) {
           const computeDeposits = async (confirmations, output) => {
             output.count = depositAddresses.length;
             const depositedAmounts = await dingo.getReceivedAmountByAddresses(confirmations, depositAddresses.map((x) => x.depositAddress));
-            for (const key in depositedAmounts) {
-              if (depositedAmounts.hasOwnProperty(key)) {
-                if(key === "2MxMRmWcBzh8k25wNmvJPQodKqvyL5kEZKg") {
-                  delete depositedAmounts[key]
-                }
-              }
-            }
             const totalDepositedAmount = Object.values(depositedAmounts).reduce((a, b) => a + BigInt(dingo.toSatoshi(b.toString())), 0n).toString();
             const totalApprovableTax = Object.values(depositedAmounts).reduce((a, b) => {
               const amount = BigInt(dingo.toSatoshi(b.toString()));
@@ -399,13 +392,6 @@ function isObject(x) {
                 return a;
               }
             }, 0n).toString();
-            for(let i = 0; i <= depositAddresses.length; i++) {
-              for (const key in depositAddresses[i]) {
-                if (depositAddresses[i][key] == "2MxMRmWcBzh8k25wNmvJPQodKqvyL5kEZKg") {
-                    depositAddresses.splice(i, 1)
-                }
-              }
-            }
             const totalApprovedTax = depositAddresses.reduce((a, b) => a + BigInt(b.approvedTax), 0n).toString();
             const remainingApprovableTax = (BigInt(totalApprovableTax) - BigInt(totalApprovedTax)).toString();
 
@@ -442,10 +428,8 @@ function isObject(x) {
           // Process UTXOs.
           const computeUtxos = async (changeConfirmations, depositConfirmations, output) => {
             const changeUtxos = await dingo.listUnspent(changeConfirmations, [dingoSettings.changeAddress]);
-            let depositUtxos = await dingo.listUnspent(depositConfirmations, depositAddresses.map((x) => x.depositAddress));
+            const depositUtxos = await dingo.listUnspent(depositConfirmations, depositAddresses.map((x) => x.depositAddress));
             output.totalChangeBalance = changeUtxos.reduce((a, b) => a + BigInt(dingo.toSatoshi(b.amount.toString())), 0n).toString();
-            depositUtxos = depositUtxos.filter(deposit => deposit.amount >= MINIMUM_DEPOSIT_AMOUNT);
-            depositUtxos = depositUtxos.filter(deposit => deposit.address != "2MxMRmWcBzh8k25wNmvJPQodKqvyL5kEZKg");
             output.totalDepositsBalance = depositUtxos.reduce((a, b) => a + BigInt(dingo.toSatoshi(b.amount.toString())), 0n).toString();
           };
           await computeUtxos(dingoSettings.changeConfirmations, dingoSettings.depositConfirmations, stats.confirmedUtxos);
@@ -527,11 +511,7 @@ function isObject(x) {
     }));
 
   const validatePayouts = async (depositTaxPayouts, withdrawalPayouts, withdrawalTaxPayouts) => {
-    for (const key in depositTaxPayouts) {
-      if(depositTaxPayouts[key].depositAddress === "2MxMRmWcBzh8k25wNmvJPQodKqvyL5kEZKg") {
-        depositTaxPayouts.splice(key, 1);
-      }
-    }
+
     const totalTax = depositTaxPayouts.reduce((a, b) => a + BigInt(b.amount), 0n) + withdrawalTaxPayouts.reduce((a, b) => a + BigInt(b.amount), 0n);
     const networkFee = BigInt(depositTaxPayouts.length + withdrawalPayouts.length) * PAYOUT_NETWORK_FEE_PER_TX;
     if (totalTax < networkFee) {
@@ -601,9 +581,7 @@ function isObject(x) {
     const changeUtxos = await dingo.listUnspent(dingoSettings.changeConfirmations, [dingoSettings.changeAddress]);
     const deposited = await dingo.listReceivedByAddress(dingoSettings.depositConfirmations);
     const nonEmptyMintDepositAddresses = (await database.getMintDepositAddresses(Object.keys(deposited)));
-    let depositUtxos = await dingo.listUnspent(dingoSettings.depositConfirmations, nonEmptyMintDepositAddresses.map((x) => x.depositAddress));
-    depositUtxos = depositUtxos.filter(deposit => deposit.amount >= MINIMUM_DEPOSIT_AMOUNT);
-    depositUtxos = depositUtxos.filter(deposit => deposit.address != "2MxMRmWcBzh8k25wNmvJPQodKqvyL5kEZKg");
+    const depositUtxos = await dingo.listUnspent(dingoSettings.depositConfirmations, nonEmptyMintDepositAddresses.map((x) => x.depositAddress));
     return changeUtxos.concat(depositUtxos);
   };
 
@@ -644,11 +622,7 @@ function isObject(x) {
         vouts[p.burnDestination] = BigInt(p.amount);
       }
     }
-    for (const key in depositTaxPayouts) {
-      if(depositTaxPayouts[key].depositAddress === "2MxMRmWcBzh8k25wNmvJPQodKqvyL5kEZKg") {
-        depositTaxPayouts.splice(key, 1);
-      }
-    }
+
     // Compute tax payouts.
     const totalTax = depositTaxPayouts.reduce((a, b) => a + BigInt(b.amount), 0n) + withdrawalTaxPayouts.reduce((a, b) => a + BigInt(b.amount), 0n);
     const networkFee = BigInt(depositTaxPayouts.length + withdrawalPayouts.length) * PAYOUT_NETWORK_FEE_PER_TX;
