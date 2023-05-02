@@ -222,7 +222,7 @@ Available commands:
         chalk.bold(`Use the following details to call, with your wallet, the \`mint\` function of the smart contract (https://bscscan.com/token/${smartContractSettings.contractAddress}#writeContract).\n`) +
         chalk.red.bold('  (DO NOT COPY ANY WHITE SPACES OR YOUR TRANSACTION MAY FAIL!)\n') +
         `  config nonce: ${results.filter((x) => x !== undefined)[0].configNonce}\n` +
-        `  new addresses: ${results.filter((x) => x !== undefined)[0].newAddresses}\n` +
+        `  new addresses: ${results.filter((x) => x !== undefined)[0].newAuthorityAddresses}\n` +
         `  signV: ${results.map((x) => x === undefined ? '0x0' : x.v.toString()).join(',')}\n` +
         `  signR: ${results.map((x) => x === undefined ? '0x0' : x.r.toString()).join(',')}\n` +
         `  signS: ${results.map((x) => x === undefined ? '0x0' : x.s.toString()).join(',')}\n` +
