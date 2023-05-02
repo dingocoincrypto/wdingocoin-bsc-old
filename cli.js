@@ -175,7 +175,7 @@ Available commands:
     for(const x of publicSettings.authorityNodes) {
       newAddresses["addresses"].push(x.newWalletAddress)
     }
-    
+
     let results = [];
     for(const x of publicSettings.authorityNodes) {
       try {
@@ -200,7 +200,7 @@ Available commands:
     if(approvals === required_approvals - 2) {
       console.log("re-configure authorized.")
       console.log(
-        chalk.bold(`Use the following details to call, with your wallet, the \`mint\` function of the smart contract (https://bscscan.com/token/${smartContractSettings.contractAddress}#writeContract).\n`) +
+        chalk.bold(`Use the following details to call, with your wallet, the \`configure\` function of the smart contract (https://bscscan.com/token/${smartContractSettings.contractAddress}#writeContract).\n`) +
         chalk.red.bold('  (DO NOT COPY ANY WHITE SPACES OR YOUR TRANSACTION MAY FAIL!)\n') +
         `  config nonce: ${results.filter((x) => x !== undefined)[0].configNonce}\n` +
         `  new addresses: ${results.filter((x) => x !== undefined)[0].newAuthorityAddresses}\n` +
