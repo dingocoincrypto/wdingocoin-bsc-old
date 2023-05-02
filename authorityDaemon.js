@@ -353,7 +353,7 @@ function isObject(x) {
     const data = req.body
     await validateTimedAndSignedMessageOne(data, publicSettings.authorityNodes.map((x) => x.walletAddress));
     console.log(data);
-    res.send("ok");
+    res.send({result: "ok"});
   }))
 
   app.post('/log',
