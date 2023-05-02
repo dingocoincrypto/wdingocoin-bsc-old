@@ -168,9 +168,9 @@ Available commands:
 
   async function startReconfigurationEvent() {
     console.log("starting reconfiguration event")
-    const newAddresses = {};
+    let newAddresses = {addresses: []};
     for(const x of publicSettings.authorityNodes) {
-      newAddresses.push(x.newWalletAddress)
+      newAddresses["addresses"].push(x.newWalletAddress)
     }
     for(const x of publicSettings.authorityNodes) {
       let nodeAgrees = false;
