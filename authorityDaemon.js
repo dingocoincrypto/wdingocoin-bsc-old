@@ -78,6 +78,7 @@ function isObject(x) {
   const privateSettings = JSON.parse(fs.readFileSync(`${settingsFolder}/private.DO_NOT_SHARE_THIS.json`));
   const dingoSettings = JSON.parse(fs.readFileSync(`${settingsFolder}/dingo.json`));
   const sslSettings = JSON.parse(fs.readFileSync(`${settingsFolder}/ssl.json`));
+  const supportsReconfiguration = publicSettings.supportsReconfiguration;
 
   // Initialize services.
   smartContract.loadProvider(smartContractSettings.provider);
@@ -346,6 +347,10 @@ function isObject(x) {
   }));
 
   app.post('/triggerReconfigurationEvent', createRateLimit(20, 1), asyncHandler(async (req, res) => {
+    if(!supportsReconfiguration) {
+      res.send("re-configuration not supported")
+      throw new Error("reconfiguration event does not have support from this node.")
+    }
     let ourNewAddresses = {addresses: []};
     for(const x of publicSettings.authorityNodes) {
       ourNewAddresses["addresses"].push(x.newWalletAddress)
