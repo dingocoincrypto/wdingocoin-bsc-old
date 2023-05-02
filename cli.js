@@ -178,23 +178,23 @@ Available commands:
 
 
 
-    for (const x of publicSettings.authorityNodes) {
-      process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
-      try {
-        const result = smartContract.validateSignedMessage(await post(`${getAuthorityLink(x)}/createMintTransaction`, { mintAddress: mintAddress }), x.walletAddress);
-        results.push(result);
-        console.log(
-          `\n    depositAddress: ${result.depositAddress}\n` +
-          `    mintNonce: ${result.mintNonce}, mintAmount: ${dingo.fromSatoshi(result.mintAmount)} (= ${result.mintAmount} satoshi)\n` +
-          `    signature (V): ${result.onContractVerification.v}\n` +
-          `    signature (R): ${result.onContractVerification.r}\n` +
-          `    signature (S): ${result.onContractVerification.s}`);
-      } catch (error) {
-        results.push(undefined);
-        if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
-        else { console.log(getStyledError(null, error.message)); }
-      }
-    }
+    // for (const x of publicSettings.authorityNodes) {
+    //   process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
+    //   try {
+    //     const result = smartContract.validateSignedMessage(await post(`${getAuthorityLink(x)}/createMintTransaction`, { mintAddress: mintAddress }), x.walletAddress);
+    //     results.push(result);
+    //     console.log(
+    //       `\n    depositAddress: ${result.depositAddress}\n` +
+    //       `    mintNonce: ${result.mintNonce}, mintAmount: ${dingo.fromSatoshi(result.mintAmount)} (= ${result.mintAmount} satoshi)\n` +
+    //       `    signature (V): ${result.onContractVerification.v}\n` +
+    //       `    signature (R): ${result.onContractVerification.r}\n` +
+    //       `    signature (S): ${result.onContractVerification.s}`);
+    //   } catch (error) {
+    //     results.push(undefined);
+    //     if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
+    //     else { console.log(getStyledError(null, error.message)); }
+    //   }
+    // }
 
     let results = [];
     for(const x of publicSettings.authorityNodes) {
