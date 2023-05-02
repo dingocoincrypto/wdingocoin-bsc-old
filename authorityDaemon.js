@@ -78,7 +78,6 @@ function isObject(x) {
   const privateSettings = JSON.parse(fs.readFileSync(`${settingsFolder}/private.DO_NOT_SHARE_THIS.json`));
   const dingoSettings = JSON.parse(fs.readFileSync(`${settingsFolder}/dingo.json`));
   const sslSettings = JSON.parse(fs.readFileSync(`${settingsFolder}/ssl.json`));
-  const supportsReconfiguration = publicSettings.supportsReconfiguration;
 
   // Initialize services.
   smartContract.loadProvider(smartContractSettings.provider);
