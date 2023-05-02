@@ -179,7 +179,7 @@ Available commands:
       try {
         process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
         let result = await validateTimedAndSignedMessageOne(await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(newAddresses)), publicSettings.authorityNodes.map((x) => x.walletAddress))
-        console.log(result);
+        console.log(result["msg"]);
         // if(result)
       } catch (error) {
         if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
