@@ -348,15 +348,14 @@ function isObject(x) {
 
   app.post('/triggerReconfigurationEvent', createRateLimit(20, 1), asyncHandler(async (req, res) => {
     if(!supportsReconfiguration) {
-      res.send("re-configuration not supported")
       throw new Error("reconfiguration event does not have support from this node.")
+    }
+    if(RECONFIGURING) {
+      throw new Error("re-configuration event is already underway.");
     }
     let ourNewAddresses = {addresses: []};
     for(const x of publicSettings.authorityNodes) {
       ourNewAddresses["addresses"].push(x.newWalletAddress)
-    }
-    if(RECONFIGURING) {
-      throw new Error("re-configuration event is already underway.");
     }
     console.log("triggerReconfigurationEvent");
     const data = req.body
