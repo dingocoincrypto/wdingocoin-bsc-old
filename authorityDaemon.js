@@ -361,9 +361,21 @@ function isObject(x) {
     const data = req.body
     await validateTimedAndSignedMessageOne(data, publicSettings.authorityNodes.map((x) => x.walletAddress));
     console.log(data);
-    let result = {msg: ""};
+    let result = 
+    {
+      msg: "",
+      configNonce: 1,
+      newAuthorityAddresses: ourNewAddresses.addresses,
+      newAuthorityThreshold: 3,
+      newMinBurnAmount: 1000000000,
+    };
+    const signature = smartContract.signConfigure(smartContractSettings.chainId, 1, ourNewAddresses.addresses, 3, 1000000000)
+
     if(JSON.stringify(ourNewAddresses["addresses"] === JSON.stringify(data.addresses))) {
       result["msg"] = "consensus pass"
+      result["v"] = signature.v
+      result["r"] = signature.r
+      result["s"] = signature.s
     } else {
       result["msg"] = "consensus failure"
     }
