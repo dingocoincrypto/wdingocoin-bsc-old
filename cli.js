@@ -169,22 +169,28 @@ Available commands:
   async function startReconfigurationEvent() {
     console.log("starting reconfiguration event")
     let newAddresses = {addresses: []};
+    let approvals = 0;
+    let required_approvals = publicSettings.authorityNodes.length;
     //populate newAddresses
     for(const x of publicSettings.authorityNodes) {
       newAddresses["addresses"].push(x.newWalletAddress)
     }
-    let approvals = 0;
-    let required_approvals = publicSettings.authorityNodes.length;
     for(const x of publicSettings.authorityNodes) {
       try {
         process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
         let result = await validateTimedAndSignedMessageOne(await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(newAddresses)), publicSettings.authorityNodes.map((x) => x.walletAddress))
-        console.log(result["msg"]);
-        // if(result)
+        console.log(result);
+        if(result["msg"] === "consensus pass") {
+          approvals = approvals += 1;
+          console.log("continue...")
+        }
       } catch (error) {
         if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
         else { console.log(getStyledError(null, error.message)); }
       }
+    }
+    if(approvals === required_approvals) {
+      console.log("re-configure authorized.")
     }
   }
 
