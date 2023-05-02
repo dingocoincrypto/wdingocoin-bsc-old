@@ -171,6 +171,7 @@ Available commands:
     for(const x of publicSettings.authorityNodes) {
       let nodeAgrees = false;
       while(!nodeAgrees) {
+        console.log("trying node: "+ `${getAuthorityLink(x)}`)
         setInterval(async () => {
           try {
             let result = await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`)
