@@ -212,6 +212,7 @@ Available commands:
           approvals = approvals += 1;
         }
       } catch (error) {
+        results.push(undefined)
         if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
         else { console.log(getStyledError(null, error.message)); }
       }
