@@ -4,6 +4,7 @@
   "blacklistedAddresses": [
     "2MxMRmWcBzh8k25wNmvJPQodKqvyL5kEZKg"
   ],
+  "supportReconfiguration": false,
   "authorityNodes": [
     {
       "hostname": "mad1.twinkykms.com",
