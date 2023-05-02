@@ -351,7 +351,7 @@ function isObject(x) {
     }
     console.log("triggerReconfigurationEvent");
     const data = req.body
-    await validateTimedAndSignedMessageOne(data, publicSettings.authorityNodes.map((x) => x.walletAddress));
+    // await validateTimedAndSignedMessageOne(data, publicSettings.authorityNodes.map((x) => x.walletAddress));
     console.log(data);
     res.send({result: "ok"});
   }))
