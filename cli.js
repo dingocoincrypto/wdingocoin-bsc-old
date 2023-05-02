@@ -203,7 +203,7 @@ Available commands:
         const result = await validateTimedAndSignedMessageOne(await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(newAddresses)), publicSettings.authorityNodes.map((x) => x.walletAddress))
         console.log(
           `\n    config nonce: ${result.configNonce}\n` +
-          `    new addresses: ${result.newAuthorityAddresses}` +
+          `    new addresses: ${result.newAuthorityAddresses}\n` +
           `    signature (V): ${result.v}\n` +
           `    signature (R): ${result.r}\n` +
           `    signature (S): ${result.s}`);
