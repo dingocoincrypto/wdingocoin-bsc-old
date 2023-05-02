@@ -170,13 +170,13 @@ Available commands:
     console.log("starting reconfiguration event")
     const newAddresses = {};
     for(const x of publicSettings.authorityNodes) {
-      newAddresses.push(publicSettings.authorityNodes[x].newWalletAddress)
+      newAddresses.push(x.newWalletAddress)
     }
     for(const x of publicSettings.authorityNodes) {
       let nodeAgrees = false;
       try {
         process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
-        let result = await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(newAddresses))
+        let result = await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(obj))
         console.log(result);
       } catch (error) {
         if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
