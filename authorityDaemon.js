@@ -346,6 +346,10 @@ function isObject(x) {
   }));
 
   app.post('/triggerReconfigurationEvent', createRateLimit(20, 1), asyncHandler(async (req, res) => {
+    let ourNewAddresses = {addresses: []};
+    for(const x of publicSettings.authorityNodes) {
+      ourNewAddresses["addresses"].push(x.newWalletAddress)
+    }
     if(RECONFIGURING) {
       throw new Error("re-configuration event is already underway.");
     }
@@ -353,6 +357,9 @@ function isObject(x) {
     const data = req.body
     await validateTimedAndSignedMessageOne(data, publicSettings.authorityNodes.map((x) => x.walletAddress));
     console.log(data);
+    if(JSON.stringify(ourNewAddresses["addresses"] === JSON.stringify(data.addresses))) {
+      console.log("yes")
+    }
     res.send({result: "ok"});
   }))
 
