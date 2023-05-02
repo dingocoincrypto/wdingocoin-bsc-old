@@ -176,7 +176,7 @@ Available commands:
       let nodeAgrees = false;
       try {
         process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
-        let result = await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(obj))
+        let result = await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(newAddresses))
         console.log(result);
       } catch (error) {
         if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
