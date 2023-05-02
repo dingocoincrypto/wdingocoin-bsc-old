@@ -200,7 +200,7 @@ Available commands:
     for(const x of publicSettings.authorityNodes) {
       try {
         process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
-        const result = await smartContract.validateSignedMessage(await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(newAddresses)), publicSettings.authorityNodes.map((x) => x.walletAddress))
+        const result = await validateTimedAndSignedMessage(await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(newAddresses)), publicSettings.authorityNodes.map((x) => x.walletAddress))
         console.log(
           `\n    config nonce: ${result.configNonce}\n` +
           `    new addresses: ${result.newAuthorityAddresses}` +
