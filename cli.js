@@ -175,27 +175,7 @@ Available commands:
     for(const x of publicSettings.authorityNodes) {
       newAddresses["addresses"].push(x.newWalletAddress)
     }
-
-
-
-    // for (const x of publicSettings.authorityNodes) {
-    //   process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
-    //   try {
-    //     const result = smartContract.validateSignedMessage(await post(`${getAuthorityLink(x)}/createMintTransaction`, { mintAddress: mintAddress }), x.walletAddress);
-    //     results.push(result);
-    //     console.log(
-    //       `\n    depositAddress: ${result.depositAddress}\n` +
-    //       `    mintNonce: ${result.mintNonce}, mintAmount: ${dingo.fromSatoshi(result.mintAmount)} (= ${result.mintAmount} satoshi)\n` +
-    //       `    signature (V): ${result.onContractVerification.v}\n` +
-    //       `    signature (R): ${result.onContractVerification.r}\n` +
-    //       `    signature (S): ${result.onContractVerification.s}`);
-    //   } catch (error) {
-    //     results.push(undefined);
-    //     if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
-    //     else { console.log(getStyledError(null, error.message)); }
-    //   }
-    // }
-
+    
     let results = [];
     for(const x of publicSettings.authorityNodes) {
       try {
@@ -226,9 +206,7 @@ Available commands:
         `  new addresses: ${results.filter((x) => x !== undefined)[0].newAuthorityAddresses}\n` +
         `  signV: ${results.map((x) => x === undefined ? '0x0' : x.v.toString()).join(',')}\n` +
         `  signR: ${results.map((x) => x === undefined ? '0x0' : x.r.toString()).join(',')}\n` +
-        `  signS: ${results.map((x) => x === undefined ? '0x0' : x.s.toString()).join(',')}\n` +
-        chalk.bold('Frequently asked questions:\n') +
-        '  - What\'s with the large amount? -> The smart contract takes in Satoshis as parameters. Hence the amount is 100,000,000 times more.'
+        `  signS: ${results.map((x) => x === undefined ? '0x0' : x.s.toString()).join(',')}\n` 
       );
     } else {
       console.log(`consensus failed ${approvals}/${required_approvals}`)
