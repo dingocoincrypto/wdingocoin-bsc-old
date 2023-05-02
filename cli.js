@@ -153,6 +153,7 @@ Available commands:
   ${chalk.bold('createBurnTransaction <amount> <destination>')}: Creates a transaction to burn <amount> of wDingocoins, which can be submitted for withdrawal to <destination> on the Dingocoin Mainnet.
   ${chalk.bold('submitWithdrawal <walletAddress> <index>')}: Submits the <index>-th wDingocoin burn for withdrawal of Dingocoins for <wallet address>.
 
+  ${chalk.bold('startReconfigurationEvent')}: Starts a re-configuration event for the smart contract authority settings.
   ${chalk.bold('executePayouts <processDeposits> <processWithdrawals>')}: ${chalk.bold.red('[COORDINATOR ONLY]')} Executes payouts.
   ${chalk.bold('executePayoutsTest <processDeposits> <processWithdrawals>')}: ${chalk.bold.red('[COORDINATOR ONLY]')} Tests the execution of payouts.
 
@@ -162,6 +163,24 @@ Available commands:
   ${chalk.bold('dingoDoesAHarakiri <nodeIndex>')}: ${chalk.bold.red('[AUTHORITY ONLY]')} Sends a suicide signal to node <nodeIndex>.
   ${chalk.bold('dingoDoesAHarakiri')}: ${chalk.bold.red('[AUTHORITY ONLY]')} Sends a suicide signal to all nodes.
 `);
+  }
+
+  async function startReconfigurationEvent() {
+    console.log("starting reconfiguration event")
+    for(const x of publicSettings.authorityNodes) {
+      let nodeAgrees = false;
+      while(!nodeAgrees) {
+        setInterval(async () => {
+          try {
+            let result = await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`)
+            console.log(result);
+          } catch (error) {
+            if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
+            else { console.log(getStyledError(null, error.message)); }
+          }
+        }, 60_000)
+      }
+    }
   }
 
   async function createMintDepositAddress(mintAddress) {

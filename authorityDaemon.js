@@ -27,6 +27,7 @@ function getAuthorityLink(x) {
 const FLAT_FEE = BigInt(dingo.toSatoshi('10'));
 const DUST_THRESHOLD = BigInt(dingo.toSatoshi('1'));
 const PAYOUT_NETWORK_FEE_PER_TX = BigInt(dingo.toSatoshi('20')); // Add this to network fee for each deposit / withdrawal.
+let RECONFIGURING = false;
 
 function meetsTax(x) {
   return BigInt(x) >= FLAT_FEE;
@@ -343,6 +344,17 @@ function isObject(x) {
       res.send(await createTimedAndSignedMessage({}));
     });
   }));
+
+  app.post('/triggerReconfigurationEvent', createRateLimit(20, 1), asyncHandler(async (req, res) => {
+    if(RECONFIGURING) {
+      throw new Error("re-configuration event is already underway.");
+    }
+    console.log("triggerReconfigurationEvent");
+    const data = req.body
+    await validateTimedAndSignedMessageOne(data, publicSettings.authorityNodes.map((x) => x.walletAddress));
+    console.log(data);
+    res.send("ok");
+  }))
 
   app.post('/log',
     createRateLimit(5, 1),
