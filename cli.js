@@ -171,7 +171,9 @@ Available commands:
     for(const x of publicSettings.authorityNodes) {
       let nodeAgrees = false;
       try {
-        let result = await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, {newAddresses: ["123", "123"]})
+        console.log("trying node: "+ `${getAuthorityLink(x)}`)
+        const obj = {newAddresses: ["123", "123"]};
+        let result = await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, obj.newAddresses)
         console.log(result);
       } catch (error) {
         if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
