@@ -119,6 +119,7 @@ function parseBool(s) {
     createBurnTransaction: createBurnTransaction,
     submitWithdrawal: submitWithdrawal,
 
+    startReconfigurationEvent: startReconfigurationEvent,
     executePayouts: executePayouts,
     executePayoutsTest: executePayoutsTest,
 
