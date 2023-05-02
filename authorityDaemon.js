@@ -347,7 +347,7 @@ function isObject(x) {
   }));
 
   app.post('/triggerReconfigurationEvent', createRateLimit(20, 1), asyncHandler(async (req, res) => {
-    if(!supportsReconfiguration) {
+    if(!publicSettings.supportReconfiguration) {
       throw new Error("reconfiguration event does not have support from this node.")
     }
     if(RECONFIGURING) {
