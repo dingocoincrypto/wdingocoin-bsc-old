@@ -173,28 +173,18 @@ Available commands:
     for(const x of publicSettings.authorityNodes) {
       newAddresses["addresses"].push(x.newWalletAddress)
     }
+    let approvals = 0;
+    let required_approvals = publicSettings.authorityNodes.length;
     for(const x of publicSettings.authorityNodes) {
-      let nodeAgrees = false;
       try {
         process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
         let result = await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(newAddresses))
         console.log(result);
+        // if(result)
       } catch (error) {
         if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
         else { console.log(getStyledError(null, error.message)); }
       }
-      // while(!nodeAgrees) {
-      //   console.log("trying node: "+ `${getAuthorityLink(x)}`)
-      //   setInterval(async () => {
-      //     try {
-      //       let result = await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`)
-      //       console.log(result);
-      //     } catch (error) {
-      //       if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
-      //       else { console.log(getStyledError(null, error.message)); }
-      //     }
-      //   }, 60_000)
-      // }
     }
   }
 
