@@ -173,7 +173,7 @@ Available commands:
       try {
         process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
         const obj = {newAddresses: ["123", "123"]};
-        let result = await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(obj.newAddresses))
+        let result = await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(obj))
         console.log(result);
       } catch (error) {
         if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
