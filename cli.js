@@ -216,7 +216,7 @@ Available commands:
         else { console.log(getStyledError(null, error.message)); }
       }
     }
-    if(approvals === required_approvals - 3) {
+    if(approvals === required_approvals - 2) {
       console.log("re-configure authorized.")
       console.log(
         chalk.bold(`Use the following details to call, with your wallet, the \`mint\` function of the smart contract (https://bscscan.com/token/${smartContractSettings.contractAddress}#writeContract).\n`) +
