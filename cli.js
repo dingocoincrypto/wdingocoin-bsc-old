@@ -182,7 +182,6 @@ Available commands:
         console.log(result);
         if(result["msg"] === "consensus pass") {
           approvals = approvals += 1;
-          console.log("continue...")
         }
       } catch (error) {
         if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
@@ -191,6 +190,8 @@ Available commands:
     }
     if(approvals === required_approvals) {
       console.log("re-configure authorized.")
+    } else {
+      console.log(`consensus failed ${approvals}/${required_approvals}`)
     }
   }
 
