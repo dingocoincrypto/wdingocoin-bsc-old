@@ -178,7 +178,7 @@ Available commands:
     for(const x of publicSettings.authorityNodes) {
       try {
         process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
-        let result = await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(newAddresses))
+        let result = await validateTimedAndSignedMessageOne(await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(newAddresses)))
         console.log(result);
         // if(result)
       } catch (error) {

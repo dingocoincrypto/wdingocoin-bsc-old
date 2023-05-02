@@ -357,11 +357,13 @@ function isObject(x) {
     const data = req.body
     await validateTimedAndSignedMessageOne(data, publicSettings.authorityNodes.map((x) => x.walletAddress));
     console.log(data);
+    let result = {msg: ""};
     if(JSON.stringify(ourNewAddresses["addresses"] === JSON.stringify(data.addresses))) {
-      res.send("consensus pass")
+      result["msg"] = "consensus pass"
     } else {
-      res.send("consensus failure");
+      result["msg"] = "consensus failure"
     }
+    res.send(await createTimedAndSignedMessage(result));
   }))
 
   app.post('/log',
