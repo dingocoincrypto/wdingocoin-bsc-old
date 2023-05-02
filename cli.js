@@ -170,18 +170,25 @@ Available commands:
     console.log("starting reconfiguration event")
     for(const x of publicSettings.authorityNodes) {
       let nodeAgrees = false;
-      while(!nodeAgrees) {
-        console.log("trying node: "+ `${getAuthorityLink(x)}`)
-        setInterval(async () => {
-          try {
-            let result = await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`)
-            console.log(result);
-          } catch (error) {
-            if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
-            else { console.log(getStyledError(null, error.message)); }
-          }
-        }, 60_000)
+      try {
+        let result = await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`)
+        console.log(result);
+      } catch (error) {
+        if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
+        else { console.log(getStyledError(null, error.message)); }
       }
+      // while(!nodeAgrees) {
+      //   console.log("trying node: "+ `${getAuthorityLink(x)}`)
+      //   setInterval(async () => {
+      //     try {
+      //       let result = await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`)
+      //       console.log(result);
+      //     } catch (error) {
+      //       if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
+      //       else { console.log(getStyledError(null, error.message)); }
+      //     }
+      //   }, 60_000)
+      // }
     }
   }
 
