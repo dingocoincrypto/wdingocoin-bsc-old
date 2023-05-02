@@ -218,6 +218,17 @@ Available commands:
     }
     if(approvals === required_approvals) {
       console.log("re-configure authorized.")
+      console.log(
+        chalk.bold(`Use the following details to call, with your wallet, the \`mint\` function of the smart contract (https://bscscan.com/token/${smartContractSettings.contractAddress}#writeContract).\n`) +
+        chalk.red.bold('  (DO NOT COPY ANY WHITE SPACES OR YOUR TRANSACTION MAY FAIL!)\n') +
+        `  config nonce: ${results.filter((x) => x !== undefined)[0].configNonce}\n` +
+        `  new addresses: ${results.filter((x) => x !== undefined)[0].newAddresses}\n` +
+        `  signV: ${results.map((x) => x === undefined ? '0x0' : x.v.toString()).join(',')}\n` +
+        `  signR: ${results.map((x) => x === undefined ? '0x0' : x.r.toString()).join(',')}\n` +
+        `  signS: ${results.map((x) => x === undefined ? '0x0' : x.s.toString()).join(',')}\n` +
+        chalk.bold('Frequently asked questions:\n') +
+        '  - What\'s with the large amount? -> The smart contract takes in Satoshis as parameters. Hence the amount is 100,000,000 times more.'
+      );
     } else {
       console.log(`consensus failed ${approvals}/${required_approvals}`)
     }
