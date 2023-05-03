@@ -197,7 +197,7 @@ Available commands:
         else { console.log(getStyledError(null, error.message)); }
       }
     }
-    if(approvals === required_approvals - 2) {
+    if(approvals >= publicSettings.authorityThreshold) {
       console.log("re-configure authorized.")
       console.log(
         chalk.bold(`Use the following details to call, with your wallet, the \`configure\` function of the smart contract (https://bscscan.com/token/${smartContractSettings.contractAddress}#writeContract).\n`) +
