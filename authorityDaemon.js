@@ -363,12 +363,12 @@ function isObject(x) {
     let result = 
     {
       msg: "",
-      configNonce: 0,
+      configNonce: 1,
       newAuthorityAddresses: ourNewAddresses.addresses,
       newAuthorityThreshold: 3,
       newMinBurnAmount: 1000000000,
     };
-    const signature = smartContract.signConfigure(smartContractSettings.chainId, 0, ourNewAddresses.addresses, 3, 1000000000)
+    const signature = smartContract.signConfigure(smartContractSettings.chainId, 1, ourNewAddresses.addresses, 3, 1000000000)
 
     if(JSON.stringify(ourNewAddresses["addresses"] === JSON.stringify(data.addresses))) {
       result["msg"] = "consensus pass"
