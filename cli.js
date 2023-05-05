@@ -168,8 +168,10 @@ Available commands:
   }
 
   async function startReconfigurationEvent() {
-    assert(publicSettings.supportReconfiguration, "Your node must support a re-configuration event (settings/public.json) to run this command.")
-    console.log("starting reconfiguration event")
+    if(!publicSettings.supportReconfiguration) {
+      throw new Error("Your node must support a re-configuration event (settings/public.json) to run this command.")
+    }
+
     let newAddresses = {addresses: []};
     let approvals = 0;
     let required_approvals = publicSettings.authorityNodes.length;
