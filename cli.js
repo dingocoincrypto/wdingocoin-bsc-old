@@ -154,7 +154,7 @@ Available commands:
   ${chalk.bold('createBurnTransaction <amount> <destination>')}: Creates a transaction to burn <amount> of wDingocoins, which can be submitted for withdrawal to <destination> on the Dingocoin Mainnet.
   ${chalk.bold('submitWithdrawal <walletAddress> <index>')}: Submits the <index>-th wDingocoin burn for withdrawal of Dingocoins for <wallet address>.
 
-  ${chalk.bold('startReconfigurationEvent')}: Starts a re-configuration event for the smart contract authority settings.
+  ${chalk.bold('startReconfigurationEvent')}: ${chalk.bold.red('[COORDINATOR ONLY]')} Starts a re-configuration event for the smart contract authority settings.
   ${chalk.bold('executePayouts <processDeposits> <processWithdrawals>')}: ${chalk.bold.red('[COORDINATOR ONLY]')} Executes payouts.
   ${chalk.bold('executePayoutsTest <processDeposits> <processWithdrawals>')}: ${chalk.bold.red('[COORDINATOR ONLY]')} Tests the execution of payouts.
 
