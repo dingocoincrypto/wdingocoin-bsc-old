@@ -5,6 +5,7 @@ const dingo = require('./dingo');
 const fs = require('fs');
 const got = require('got');
 const smartContract = require('./smartContract.js');
+const { assert } = require('console');
 
 function getAuthorityLink(x) {
   return `https://${x.hostname}:${x.port}`;
@@ -167,6 +168,7 @@ Available commands:
   }
 
   async function startReconfigurationEvent() {
+    assert(publicSettings.supportReconfiguration, "Your node must support a re-configuration event (settings/public.json) to run this command.")
     console.log("starting reconfiguration event")
     let newAddresses = {addresses: []};
     let approvals = 0;
