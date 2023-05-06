@@ -27,6 +27,7 @@ function getAuthorityLink(x) {
 const FLAT_FEE = BigInt(dingo.toSatoshi('10'));
 const DUST_THRESHOLD = BigInt(dingo.toSatoshi('1'));
 const PAYOUT_NETWORK_FEE_PER_TX = BigInt(dingo.toSatoshi('20')); // Add this to network fee for each deposit / withdrawal.
+let RECONFIGURING = false;
 
 function meetsTax(x) {
   return BigInt(x) >= FLAT_FEE;
@@ -343,6 +344,41 @@ function isObject(x) {
       res.send(await createTimedAndSignedMessage({}));
     });
   }));
+
+  app.post('/triggerReconfigurationEvent', createRateLimit(20, 1), asyncHandler(async (req, res) => {
+    if(!publicSettings.supportReconfiguration) {
+      throw new Error("reconfiguration event does not have support from this node.")
+    }
+    if(RECONFIGURING) {
+      throw new Error("re-configuration event is already underway.");
+    }
+    let ourNewAddresses = {addresses: []};
+    for(const x of publicSettings.authorityNodes) {
+      ourNewAddresses["addresses"].push(x.newWalletAddress)
+    }
+    console.log("triggerReconfigurationEvent");
+    const data = req.body
+    await validateTimedAndSignedMessage(data, publicSettings.authorityNodes[publicSettings.payoutCoordinator].walletAddress);
+    let result = 
+    {
+      msg: "",
+      configNonce: 0,
+      newAuthorityAddresses: ourNewAddresses.addresses,
+      newAuthorityThreshold: 3,
+      newMinBurnAmount: 1000000000,
+    };
+    const signature = smartContract.signConfigure(smartContractSettings.chainId, 0, ourNewAddresses.addresses, 3, 1000000000)
+
+    if(JSON.stringify(ourNewAddresses["addresses"] === JSON.stringify(data.addresses))) {
+      result["msg"] = "consensus pass"
+      result["v"] = signature.v
+      result["r"] = signature.r
+      result["s"] = signature.s
+    } else {
+      result["msg"] = "consensus failure"
+    }
+    res.send(await createTimedAndSignedMessage(result));
+  }))
 
   app.post('/log',
     createRateLimit(5, 1),

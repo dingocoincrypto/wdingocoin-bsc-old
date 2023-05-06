@@ -4,26 +4,31 @@
   "blacklistedAddresses": [
     "2MxMRmWcBzh8k25wNmvJPQodKqvyL5kEZKg"
   ],
+  "supportReconfiguration": false,
   "authorityNodes": [
     {
       "hostname": "mad1.twinkykms.com",
       "port": 8443,
-      "walletAddress": "0xb1B323740a8E7D13AF10839b121e22083Da23Ac1"
+      "walletAddress": "0xa321E9657d3357c2059D192a5865Ce0C9d3819b7",
+      "newWalletAddress": "0x0"
     },
     {
       "hostname": "mad2.twinkykms.com",
       "port": 8443,
-      "walletAddress": "0x31d75dB9eC7F1aBE2905fb590a4E41401F837C05"
+      "walletAddress": "0xab813066b457F8fF5142Fd127570b18C994fcB0B",
+      "newWalletAddress": "0x0"
     },
     {
       "hostname": "mad3.twinkykms.com",
       "port": 8443,
-      "walletAddress": "0x9C1844FFD3fb0E2c397D6510d3dCf3E2f77f47A2"
+      "walletAddress": "0xDedf4B11F3DEf072f3371a27f88f95330560235A",
+      "newWalletAddress": "0x0"
     },
     {
       "hostname": "mad4.twinkykms.com",
       "port": 8443,
-      "walletAddress": "0xb37F35DAfd8E5050CC80D9E262ad0176aD19483D"
+      "walletAddress": "0x5b1e68d7D33Fe4C78E2e43A7C1F75110E2Bc50f4",
+      "newWalletAddress": "0x0"
     }
   ],
   "payoutCoordinator": 1

@@ -5,6 +5,7 @@ const dingo = require('./dingo');
 const fs = require('fs');
 const got = require('got');
 const smartContract = require('./smartContract.js');
+const { assert } = require('console');
 
 function getAuthorityLink(x) {
   return `https://${x.hostname}:${x.port}`;
@@ -119,6 +120,7 @@ function parseBool(s) {
     createBurnTransaction: createBurnTransaction,
     submitWithdrawal: submitWithdrawal,
 
+    startReconfigurationEvent: startReconfigurationEvent,
     executePayouts: executePayouts,
     executePayoutsTest: executePayoutsTest,
 
@@ -153,6 +155,7 @@ Available commands:
   ${chalk.bold('createBurnTransaction <amount> <destination>')}: Creates a transaction to burn <amount> of wDingocoins, which can be submitted for withdrawal to <destination> on the Dingocoin Mainnet.
   ${chalk.bold('submitWithdrawal <walletAddress> <index>')}: Submits the <index>-th wDingocoin burn for withdrawal of Dingocoins for <wallet address>.
 
+  ${chalk.bold('startReconfigurationEvent')}: ${chalk.bold.red('[COORDINATOR ONLY]')} Starts a re-configuration event for the smart contract authority settings.
   ${chalk.bold('executePayouts <processDeposits> <processWithdrawals>')}: ${chalk.bold.red('[COORDINATOR ONLY]')} Executes payouts.
   ${chalk.bold('executePayoutsTest <processDeposits> <processWithdrawals>')}: ${chalk.bold.red('[COORDINATOR ONLY]')} Tests the execution of payouts.
 
@@ -162,6 +165,56 @@ Available commands:
   ${chalk.bold('dingoDoesAHarakiri <nodeIndex>')}: ${chalk.bold.red('[AUTHORITY ONLY]')} Sends a suicide signal to node <nodeIndex>.
   ${chalk.bold('dingoDoesAHarakiri')}: ${chalk.bold.red('[AUTHORITY ONLY]')} Sends a suicide signal to all nodes.
 `);
+  }
+
+  async function startReconfigurationEvent() {
+    if(!publicSettings.supportReconfiguration) {
+      throw new Error("Your node must support a re-configuration event (settings/public.json) to run this command.")
+    }
+
+    let newAddresses = {addresses: []};
+    let approvals = 0;
+    let required_approvals = publicSettings.authorityNodes.length;
+    //populate newAddresses
+    for(const x of publicSettings.authorityNodes) {
+      newAddresses["addresses"].push(x.newWalletAddress)
+    }
+
+    let results = [];
+    for(const x of publicSettings.authorityNodes) {
+      try {
+        process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
+        const result = await validateTimedAndSignedMessageOne(await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(newAddresses)), publicSettings.authorityNodes.map((x) => x.walletAddress))
+        console.log(
+          `\n    config nonce: ${result.configNonce}\n` +
+          `    new addresses: ${result.newAuthorityAddresses}\n` +
+          `    signature (V): ${result.v}\n` +
+          `    signature (R): ${result.r}\n` +
+          `    signature (S): ${result.s}`);
+        results.push(result);
+        if(result["msg"] === "consensus pass") {
+          approvals = approvals += 1;
+        }
+      } catch (error) {
+        results.push(undefined)
+        if (error.response) { console.log(getStyledError(error.response.statusCode, error.response.body)); }
+        else { console.log(getStyledError(null, error.message)); }
+      }
+    }
+    if(approvals >= publicSettings.authorityThreshold) {
+      console.log("re-configure authorized.")
+      console.log(
+        chalk.bold(`Use the following details to call, with your wallet, the \`configure\` function of the smart contract (https://mumbai.polygonscan.com/address/${smartContractSettings.contractAddress}#writeContract).\n`) +
+        chalk.red.bold('  (DO NOT COPY ANY WHITE SPACES OR YOUR TRANSACTION MAY FAIL!)\n') +
+        `  config nonce: ${results.filter((x) => x !== undefined)[0].configNonce}\n` +
+        `  new addresses: ${results.filter((x) => x !== undefined)[0].newAuthorityAddresses}\n` +
+        `  signV: ${results.map((x) => x === undefined ? '0x0' : x.v.toString()).join(',')}\n` +
+        `  signR: ${results.map((x) => x === undefined ? '0x0' : x.r.toString()).join(',')}\n` +
+        `  signS: ${results.map((x) => x === undefined ? '0x0' : x.s.toString()).join(',')}\n` 
+      );
+    } else {
+      console.log(`consensus failed ${approvals}/${required_approvals}`)
+    }
   }
 
   async function createMintDepositAddress(mintAddress) {
