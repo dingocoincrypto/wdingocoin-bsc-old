@@ -369,7 +369,7 @@ function isObject(x) {
     const signature = smartContract.signConfigure(smartContractSettings.chainId, publicSettings.configurationNonce, ourNewAddresses.addresses, publicSettings.newAuthorityThreshold, publicSettings.newMinBurnAmount)
 
     if(
-      JSON.stringify(ourNewAddresses["addresses"] === JSON.stringify(data.addresses)) &&
+      JSON.stringify(ourNewAddresses["addresses"]) === JSON.stringify(data.addresses) &&
       data.newAuthorityThreshold === publicSettings.newAuthorityThreshold &&
       data.newMinBurnAmount === publicSettings.newMinBurnAmount
       ) {
