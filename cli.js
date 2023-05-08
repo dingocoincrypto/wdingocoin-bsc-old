@@ -5,7 +5,6 @@ const dingo = require('./dingo');
 const fs = require('fs');
 const got = require('got');
 const smartContract = require('./smartContract.js');
-const { assert } = require('console');
 
 function getAuthorityLink(x) {
   return `https://${x.hostname}:${x.port}`;
@@ -190,7 +189,15 @@ Available commands:
           `    new addresses: ${result.newAuthorityAddresses}\n` +
           `    signature (V): ${result.v}\n` +
           `    signature (R): ${result.r}\n` +
-          `    signature (S): ${result.s}`);
+          `    signature (S): ${result.s}\n` +
+          `--------------------------------\n` +
+          `---- additional information ----\n` +
+          `--------------------------------\n` +
+          `    config nonce: ${result.configNonce}\n` +
+          `    new authority addresses: ${result.newAuthorityAddresses}\n` +
+          `    new authority threshold: ${result.newAuthorityThreshold}\n` +
+          `    new min burn amount: ${result.newMinBurnAmount}\n`
+          );
         results.push(result);
         if(result["msg"] === "consensus pass") {
           approvals = approvals += 1;
