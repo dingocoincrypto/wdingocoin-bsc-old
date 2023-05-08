@@ -16,25 +16,19 @@
       "hostname": "mad2.twinkykms.com",
       "port": 8443,
       "walletAddress": "0xab813066b457F8fF5142Fd127570b18C994fcB0B",
-      "newWalletAddress": "0xab813066b457F8fF5142Fd127570b18C994fcB0B",
-      "newAuthorityThreshold": 3,
-      "newMinBurnAmount": 1000000000
+      "newWalletAddress": "0xab813066b457F8fF5142Fd127570b18C994fcB0B"
     },
     {
       "hostname": "mad3.twinkykms.com",
       "port": 8443,
       "walletAddress": "0xDedf4B11F3DEf072f3371a27f88f95330560235A",
-      "newWalletAddress": "0xDedf4B11F3DEf072f3371a27f88f95330560235A",
-      "newAuthorityThreshold": 3,
-      "newMinBurnAmount": 1000000000
+      "newWalletAddress": "0xDedf4B11F3DEf072f3371a27f88f95330560235A"
     },
     {
       "hostname": "mad4.twinkykms.com",
       "port": 8443,
       "walletAddress": "0x5b1e68d7D33Fe4C78E2e43A7C1F75110E2Bc50f4",
-      "newWalletAddress": "0x5b1e68d7D33Fe4C78E2e43A7C1F75110E2Bc50f4",
-      "newAuthorityThreshold": 3,
-      "newMinBurnAmount": 1000000000
+      "newWalletAddress": "0x5b1e68d7D33Fe4C78E2e43A7C1F75110E2Bc50f4"
     }
   ],
   "payoutCoordinator": 1,
