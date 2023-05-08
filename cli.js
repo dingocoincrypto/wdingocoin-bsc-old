@@ -193,7 +193,6 @@ Available commands:
           `--------------------------------\n` +
           `---- additional information ----\n` +
           `--------------------------------\n` +
-          `    config nonce: ${result.configNonce}\n` +
           `    new authority addresses: ${result.newAuthorityAddresses}\n` +
           `    new authority threshold: ${result.newAuthorityThreshold}\n` +
           `    new min burn amount: ${result.newMinBurnAmount}\n`
