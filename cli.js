@@ -198,6 +198,7 @@ Available commands:
           `    new min burn amount: ${result.newMinBurnAmount}\n`
           );
         results.push(result);
+        console.log(result);
         console.log(result["msg"] === "consensus pass")
         console.log(JSON.stringify(result.newAuthorityAddresses) === JSON.stringify(payload.addresses))
         console.log(result.newAuthorityThreshold === publicSettings.newAuthorityThreshold)
