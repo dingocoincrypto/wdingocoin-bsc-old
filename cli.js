@@ -200,7 +200,7 @@ Available commands:
         results.push(result);
         if(
           result["msg"] === "consensus pass" &&
-          JSON.stringify(result.newAuthorityAddresses) === JSON.stringify(publicSettings[publicSettings.payoutCoordinator].newAuthorityAddresses) &&
+          JSON.stringify(result.newAuthorityAddresses) === JSON.stringify(payload.addresses) &&
           result.newAuthorityThreshold === publicSettings[publicSettings.payoutCoordinator].newAuthorityThreshold &&
           result.newMinBurnAmount === publicSettings[publicSettings.payoutCoordinator].newMinBurnAmount
           ) {
