@@ -198,7 +198,6 @@ Available commands:
           `    new min burn amount: ${result.newMinBurnAmount}\n`
           );
         results.push(result);
-        console.log(result);
         console.log(result["msg"] === "consensus pass")
         console.log(JSON.stringify(result.newAuthorityAddresses) === JSON.stringify(payload.addresses))
         console.log(result.newAuthorityThreshold === publicSettings.newAuthorityThreshold)
@@ -206,8 +205,8 @@ Available commands:
         if(
           result["msg"] === "consensus pass" &&
           JSON.stringify(result.newAuthorityAddresses) === JSON.stringify(payload.addresses) &&
-          result.newAuthorityThreshold === publicSettings[publicSettings.payoutCoordinator].newAuthorityThreshold &&
-          result.newMinBurnAmount === publicSettings[publicSettings.payoutCoordinator].newMinBurnAmount
+          result.newAuthorityThreshold === publicSettings.newAuthorityThreshold &&
+          result.newMinBurnAmount === publicSettings.newMinBurnAmount
           ) {
           approvals = approvals += 1;
         }
