@@ -5,6 +5,7 @@ const dingo = require('./dingo');
 const fs = require('fs');
 const got = require('got');
 const smartContract = require('./smartContract.js');
+const { assert } = require('console');
 
 function getAuthorityLink(x) {
   return `https://${x.hostname}:${x.port}`;
