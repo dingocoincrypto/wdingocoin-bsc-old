@@ -367,7 +367,7 @@ function isObject(x) {
       newMinBurnAmount: publicSettings.newMinBurnAmount,
     };
     const signature = smartContract.signConfigure(smartContractSettings.chainId, publicSettings.configurationNonce, ourNewAddresses.addresses, publicSettings.newAuthorityThreshold, publicSettings.newMinBurnAmount)
-    
+
     if(
       JSON.stringify(ourNewAddresses["addresses"]) === JSON.stringify(data.data.addresses) &&
       data.data.newAuthorityThreshold === publicSettings.newAuthorityThreshold &&
@@ -378,16 +378,7 @@ function isObject(x) {
       result["r"] = signature.r;
       result["s"] = signature.s;
     };
-    const signature = smartContract.signConfigure(smartContractSettings.chainId, 0, ourNewAddresses.addresses, 3, 1000000000)
-
-    if(JSON.stringify(ourNewAddresses["addresses"] === JSON.stringify(data.addresses))) {
-      result["msg"] = "consensus pass"
-      result["v"] = signature.v
-      result["r"] = signature.r
-      result["s"] = signature.s
-    } else {
-      result["msg"] = "consensus failure"
-    }
+    
     res.send(await createTimedAndSignedMessage(result));
   }))
 
