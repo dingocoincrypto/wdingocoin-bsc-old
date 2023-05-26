@@ -172,27 +172,39 @@ Available commands:
       throw new Error("Your node must support a re-configuration event (settings/public.json) to run this command.")
     }
 
-    let newAddresses = {addresses: []};
+    let payload = {addresses: [], configNonce: publicSettings.configNonce, newAuthorityThreshold: publicSettings.newAuthorityThreshold, newMinBurnAmount: publicSettings.newMinBurnAmount};
     let approvals = 0;
     let required_approvals = publicSettings.authorityNodes.length;
-    //populate newAddresses
+
     for(const x of publicSettings.authorityNodes) {
-      newAddresses["addresses"].push(x.newWalletAddress)
+      payload.addresses.push(x.newWalletAddress)
     }
 
     let results = [];
     for(const x of publicSettings.authorityNodes) {
       try {
         process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
-        const result = await validateTimedAndSignedMessageOne(await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(newAddresses)), publicSettings.authorityNodes.map((x) => x.walletAddress))
+        const result = await validateTimedAndSignedMessageOne(await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(payload)), publicSettings.authorityNodes.map((x) => x.walletAddress))
         console.log(
           `\n    config nonce: ${result.configNonce}\n` +
           `    new addresses: ${result.newAuthorityAddresses}\n` +
           `    signature (V): ${result.v}\n` +
           `    signature (R): ${result.r}\n` +
-          `    signature (S): ${result.s}`);
+          `    signature (S): ${result.s}\n` +
+          `--------------------------------\n` +
+          `---- additional information ----\n` +
+          `--------------------------------\n` +
+          `    new authority addresses: ${result.newAuthorityAddresses}\n` +
+          `    new authority threshold: ${result.newAuthorityThreshold}\n` +
+          `    new min burn amount: ${result.newMinBurnAmount}\n`
+          );
         results.push(result);
-        if(result["msg"] === "consensus pass") {
+        if(
+          result["msg"] === "consensus pass" &&
+          JSON.stringify(result.newAuthorityAddresses) === JSON.stringify(payload.addresses) &&
+          result.newAuthorityThreshold === publicSettings.newAuthorityThreshold &&
+          result.newMinBurnAmount === publicSettings.newMinBurnAmount
+          ) {
           approvals = approvals += 1;
         }
       } catch (error) {

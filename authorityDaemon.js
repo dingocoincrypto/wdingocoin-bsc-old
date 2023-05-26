@@ -356,27 +356,29 @@ function isObject(x) {
     for(const x of publicSettings.authorityNodes) {
       ourNewAddresses["addresses"].push(x.newWalletAddress)
     }
-    console.log("triggerReconfigurationEvent");
     const data = req.body
     await validateTimedAndSignedMessage(data, publicSettings.authorityNodes[publicSettings.payoutCoordinator].walletAddress);
     let result = 
     {
       msg: "",
-      configNonce: 0,
+      configNonce: publicSettings.configurationNonce,
       newAuthorityAddresses: ourNewAddresses.addresses,
-      newAuthorityThreshold: 3,
-      newMinBurnAmount: 1000000000,
+      newAuthorityThreshold: publicSettings.newAuthorityThreshold,
+      newMinBurnAmount: publicSettings.newMinBurnAmount,
     };
-    const signature = smartContract.signConfigure(smartContractSettings.chainId, 0, ourNewAddresses.addresses, 3, 1000000000)
+    const signature = smartContract.signConfigure(smartContractSettings.chainId, publicSettings.configurationNonce, ourNewAddresses.addresses, publicSettings.newAuthorityThreshold, publicSettings.newMinBurnAmount)
 
-    if(JSON.stringify(ourNewAddresses["addresses"] === JSON.stringify(data.addresses))) {
-      result["msg"] = "consensus pass"
-      result["v"] = signature.v
-      result["r"] = signature.r
-      result["s"] = signature.s
-    } else {
-      result["msg"] = "consensus failure"
-    }
+    if(
+      JSON.stringify(ourNewAddresses["addresses"]) === JSON.stringify(data.data.addresses) &&
+      data.data.newAuthorityThreshold === publicSettings.newAuthorityThreshold &&
+      data.data.newMinBurnAmount === publicSettings.newMinBurnAmount
+      ) {
+      result["msg"] = "consensus pass";
+      result["v"] = signature.v;
+      result["r"] = signature.r;
+      result["s"] = signature.s;
+    };
+    
     res.send(await createTimedAndSignedMessage(result));
   }))
 
