@@ -473,8 +473,13 @@ function isObject(x) {
 
           // Process UTXOs.
           const computeUtxos = async (changeConfirmations, depositConfirmations, output) => {
+            console.log("a")
             const changeUtxos = await dingo.listUnspent(changeConfirmations, [networkSettings[network].changeAddress]);
+            console.log("b")
+
             const depositUtxos = await dingo.listUnspent(depositConfirmations, depositAddresses.map((x) => x.depositAddress));
+            console.log("c")
+
             output.totalChangeBalance = changeUtxos.reduce((a, b) => a + BigInt(dingo.toSatoshi(b.amount.toString())), 0n).toString();
             output.totalDepositsBalance = depositUtxos.reduce((a, b) => a + BigInt(dingo.toSatoshi(b.amount.toString())), 0n).toString();
           };
