@@ -480,7 +480,7 @@ function isObject(x) {
           };
           console.log(4)
           // await computeUtxos(dingoSettings.changeConfirmations, dingoSettings.depositConfirmations, stats.confirmedUtxos);
-          await computeUtxos(String(networkSettings[network].changeConfirmations), String(networkSettings[network].depositConfirmations), stats.confirmedUtxos);
+          await computeUtxos(networkSettings[network].changeConfirmations, networkSettings[network].depositConfirmations, stats.confirmedUtxos);
           await computeUtxos(0, 0, stats.unconfirmedUtxos);
           console.log(4.5)
         }
