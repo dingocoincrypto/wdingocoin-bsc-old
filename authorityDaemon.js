@@ -479,7 +479,8 @@ function isObject(x) {
             output.totalDepositsBalance = depositUtxos.reduce((a, b) => a + BigInt(dingo.toSatoshi(b.amount.toString())), 0n).toString();
           };
           console.log(4)
-          await computeUtxos(networkSettings[network].changeConfirmations, networkSettings[network].depositConfirmations, stats.confirmedUtxos);
+          // await computeUtxos(dingoSettings.changeConfirmations, dingoSettings.depositConfirmations, stats.confirmedUtxos);
+          await computeUtxos(String(networkSettings[network].changeConfirmations), String(networkSettings[network].depositConfirmations), stats.confirmedUtxos);
           await computeUtxos(0, 0, stats.unconfirmedUtxos);
           console.log(4.5)
         }
