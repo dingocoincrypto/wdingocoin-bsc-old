@@ -652,6 +652,7 @@ Available commands:
     const networkSettingsFlattened = [];
     for (const i in stats) {
       const stat = stats[i];
+      console.log(stat)
       if (stat === undefined) {
         networkSettingsFlattened.push(['UNREACHABLE' + i, '', '', '', ''])
       } else {
