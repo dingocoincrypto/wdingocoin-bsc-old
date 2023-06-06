@@ -63,8 +63,8 @@ function parseBool(s) {
   const networkSettings = JSON.parse(fs.readFileSync(`${settingsFolder}/networks.json`))
   const privateSettings = JSON.parse(fs.readFileSync(`${settingsFolder}/private.DO_NOT_SHARE_THIS.json`));
 
-  smartContract.loadProvider(networkSettings[network].provider);
-  smartContract.loadContract(smartContractSettings.contractAbi, networkSettings[network].contractAddress);
+  smartContract.loadProvider(networkSettings.network.provider);
+  smartContract.loadContract(smartContractSettings.contractAbi, networkSettings.network.contractAddress);
   if (privateSettings.walletPrivateKey != null && privateSettings.walletPrivateKey !== undefined && privateSettings.walletPrivateKey !== "0xExampleWhichYouShouldReplace") {
     smartContract.loadAccount(privateSettings.walletPrivateKey);
   }
@@ -175,28 +175,28 @@ Available commands:
   }
 
   async function startReconfigurationEvent() {
-    if(!networkSettings[network].supportReconfiguration) {
+    if(!networkSettings.network.supportReconfiguration) {
       throw new Error("Your node must support a re-configuration event (settings/public.json) to run this command.")
     }
 
     let payload = {
       addresses: [], 
-      configNonce: networkSettings[network].configNonce, 
-      newAuthorityThreshold: networkSettings[network].newAuthorityThreshold, 
-      newMinBurnAmount: networkSettings[network].newMinBurnAmount
+      configNonce: networkSettings.network.configNonce, 
+      newAuthorityThreshold: networkSettings.network.newAuthorityThreshold, 
+      newMinBurnAmount: networkSettings.network.newMinBurnAmount
     };
     let approvals = 0;
-    let required_approvals = networkSettings[network].authorityNodes.length;
+    let required_approvals = networkSettings.network.authorityNodes.length;
 
-    for(const x of networkSettings[network].authorityNodes) {
+    for(const x of networkSettings.network.authorityNodes) {
       payload.addresses.push(x.newWalletAddress)
     }
 
     let results = [];
-    for(const x of networkSettings[network].authorityNodes) {
+    for(const x of networkSettings.network.authorityNodes) {
       try {
         process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
-        const result = await validateTimedAndSignedMessageOne(await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(payload)), networkSettings[network].authorityNodes.map((x) => x.walletAddress))
+        const result = await validateTimedAndSignedMessageOne(await post(`${getAuthorityLink(x)}/triggerReconfigurationEvent`, await createTimedAndSignedMessage(payload)), networkSettings.network.authorityNodes.map((x) => x.walletAddress))
         console.log(
           `\n    config nonce: ${result.configNonce}\n` +
           `    new addresses: ${result.newAuthorityAddresses}\n` +
@@ -214,8 +214,8 @@ Available commands:
         if(
           result["msg"] === "consensus pass" &&
           JSON.stringify(result.newAuthorityAddresses) === JSON.stringify(payload.addresses) &&
-          result.newAuthorityThreshold === networkSettings[network].newAuthorityThreshold &&
-          result.newMinBurnAmount === networkSettings[network].newMinBurnAmount
+          result.newAuthorityThreshold === networkSettings.network.newAuthorityThreshold &&
+          result.newMinBurnAmount === networkSettings.network.newMinBurnAmount
           ) {
           approvals = approvals += 1;
         }
@@ -225,7 +225,7 @@ Available commands:
         else { console.log(getStyledError(null, error.message)); }
       }
     }
-    if(approvals >= networkSettings[network].authorityThreshold) {
+    if(approvals >= networkSettings.network.authorityThreshold) {
       console.log("re-configure authorized.")
       console.log(
         chalk.bold(`Use the following details to call, with your wallet, the \`configure\` function of the smart contract (https://mumbai.polygonscan.com/address/${smartContractSettings.contractAddress}#writeContract).\n`) +
@@ -245,7 +245,7 @@ Available commands:
 
     const results1 = []
     console.log('Requesting new individual deposit addresses from nodes...');
-    for (const x of networkSettings[network].authorityNodes) {
+    for (const x of networkSettings.network.authorityNodes) {
       process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
       try {
         const result = await post(`${getAuthorityLink(x)}/generateDepositAddress`, { mintAddress: mintAddress });
@@ -264,7 +264,7 @@ Available commands:
 
     const results2 = [];
     console.log('Registering new multisig deposit address with nodes...');
-    for (const x of networkSettings[network].authorityNodes) {
+    for (const x of networkSettings.network.authorityNodes) {
       process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
       try {
         const result = smartContract.validateSignedMessage(await post(
@@ -290,7 +290,7 @@ Available commands:
   }
 
   async function queryMintBalance(mintAddress) {
-    for (const x of networkSettings[network].authorityNodes) {
+    for (const x of networkSettings.network.authorityNodes) {
       process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
       try {
         const result = smartContract.validateSignedMessage(await post(
@@ -307,7 +307,7 @@ Available commands:
   async function createMintTransaction(mintAddress) {
     console.log(chalk.bold('Retrieving signatures from authority nodes...'));
     const results = [];
-    for (const x of networkSettings[network].authorityNodes) {
+    for (const x of networkSettings.network.authorityNodes) {
       process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
       try {
         const result = smartContract.validateSignedMessage(await post(
@@ -340,7 +340,7 @@ Available commands:
   }
 
   async function queryBurnHistory(burnAddress) {
-    for (const x of networkSettings[network].authorityNodes) {
+    for (const x of networkSettings.network.authorityNodes) {
       process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
       try {
         const result = smartContract.validateSignedMessage(await post(
@@ -368,7 +368,7 @@ Available commands:
   }
 
   async function submitWithdrawal(burnAddress, burnIndex) {
-    for (const x of networkSettings[network].authorityNodes) {
+    for (const x of networkSettings.network.authorityNodes) {
       process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
       try {
         const result = smartContract.validateSignedMessage(await post(
@@ -389,8 +389,8 @@ Available commands:
     let unspent = null;
 
     console.log('Retrieving pending payouts...');
-    for (const i in networkSettings[network].authorityNodes) {
-      const node = networkSettings[network].authorityNodes[i];
+    for (const i in networkSettings.network.authorityNodes) {
+      const node = networkSettings.network.authorityNodes[i];
       console.log(`  Requesting pending payouts from Node ${i} at ${node.hostname} (${node.walletAddress})...`);
       const { depositTaxPayouts: _depositTaxPayouts, withdrawalPayouts: _withdrawalPayouts, withdrawalTaxPayouts: _withdrawalTaxPayouts } =
         await validateTimedAndSignedMessage(
@@ -463,8 +463,8 @@ Available commands:
     console.log('\n');
 
     console.log('Retrieving unspent...');
-    for (const i in networkSettings[network].authorityNodes) {
-      const node = networkSettings[network].authorityNodes[i];
+    for (const i in networkSettings.network.authorityNodes) {
+      const node = networkSettings.network.authorityNodes[i];
       console.log(`  Requesting unspent from Node ${i} at ${node.hostname} (${node.walletAddress})...`);
       const { unspent: _unspent } = await validateTimedAndSignedMessage(
           await post(`${getAuthorityLink(node)}/computeUnspent`, await createTimedAndSignedMessage({})),
@@ -492,8 +492,8 @@ Available commands:
     console.log('\n');
 
     console.log('Running test...');
-    for (const i in networkSettings[network].authorityNodes) {
-      const node = networkSettings[network].authorityNodes[i];
+    for (const i in networkSettings.network.authorityNodes) {
+      const node = networkSettings.network.authorityNodes[i];
       console.log(`  Requesting approval from Node ${i} at ${node.hostname} (${node.walletAddress})...`);
 
       const approvalChainNext = (await validateTimedAndSignedMessage(
@@ -513,8 +513,8 @@ Available commands:
 
     if (!test) {
       console.log('Executing...');
-      for (const i in networkSettings[network].authorityNodes) {
-        const node = networkSettings[network].authorityNodes[i];
+      for (const i in networkSettings.network.authorityNodes) {
+        const node = networkSettings.network.authorityNodes[i];
         console.log(`  Requesting approval from Node ${i} at ${node.hostname} (${node.walletAddress})...`);
 
         const approvalChainNext = (await validateTimedAndSignedMessage(
@@ -558,7 +558,7 @@ Available commands:
   async function consensus() {
 
     const stats = [];
-    for (const x of networkSettings[network].authorityNodes) {
+    for (const x of networkSettings.network.authorityNodes) {
       process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
       try {
         const result = smartContract.validateSignedMessage(await post(`${getAuthorityLink(x)}/stats`), x.walletAddress);
@@ -897,14 +897,14 @@ Available commands:
   }
 
   async function log(index) {
-    const result = await post(`${getAuthorityLink(networkSettings[network].authorityNodes[parseInt(index)])}/log`,
+    const result = await post(`${getAuthorityLink(networkSettings.network.authorityNodes[parseInt(index)])}/log`,
       await createTimedAndSignedMessage({}));
     console.log(result.log);
   }
 
   async function syncDatabase(index) {
     console.log('Downloading database...');
-    const result = await post(`${getAuthorityLink(networkSettings[network].authorityNodes[parseInt(index)])}/dumpDatabase`,
+    const result = await post(`${getAuthorityLink(networkSettings.network.authorityNodes[parseInt(index)])}/dumpDatabase`,
       await createTimedAndSignedMessage({}));
     console.log('Overwriting local database...');
     await database.reset(databaseSettings.databasePath, result.sql);
@@ -913,7 +913,7 @@ Available commands:
 
   async function dingoDoesAHarakiri(index) {
     console.log('Sending suicide signal to nodes...');
-    for (const x of (index === undefined ? networkSettings[network].authorityNodes : [networkSettings[network].authorityNodes[parseInt(index)]])) {
+    for (const x of (index === undefined ? networkSettings.network.authorityNodes : [networkSettings.network.authorityNodes[parseInt(index)]])) {
       process.stdout.write(`  ${getStyledAuthorityLink(x)} ${chalk.bold('->')} `);
       try {
         const result = await post(`${getAuthorityLink(x)}/dingoDoesAHarakiri`, await createTimedAndSignedMessage({}));

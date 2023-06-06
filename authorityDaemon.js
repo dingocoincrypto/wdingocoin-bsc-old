@@ -86,8 +86,8 @@ function isObject(x) {
   const sslSettings = JSON.parse(fs.readFileSync(`${settingsFolder}/ssl.json`));
 
   // Initialize services.
-  smartContract.loadProvider(networkSettings[network].provider);
-  smartContract.loadContract(smartContractSettings.contractAbi, networkSettings[network].contractAddress);
+  smartContract.loadProvider(networkSettings.network.provider);
+  smartContract.loadContract(smartContractSettings.contractAbi, networkSettings.network.contractAddress);
   smartContract.loadAccount(privateSettings.walletPrivateKey);
   database.load(databaseSettings.databasePath);
   async function post(link, data) {
@@ -190,11 +190,11 @@ function isObject(x) {
 
   app.post('/registerMintDepositAddress', createRateLimit(20, 1), asyncHandler(async (req, res) => {
     const data = req.body;
-    if (data.generateDepositAddressResponses.length !== networkSettings[network].authorityNodes.length) {
+    if (data.generateDepositAddressResponses.length !== networkSettings.network.authorityNodes.length) {
       throw new Error('Incorrect authority count');
     }
     const generateDepositAddressResponses = await Promise.all(data.generateDepositAddressResponses.map(
-      (x, i) => validateTimedAndSignedMessage(x, networkSettings[network].authorityNodes[i].walletAddress)
+      (x, i) => validateTimedAndSignedMessage(x, networkSettings.network.authorityNodes[i].walletAddress)
     ));
     if (!generateDepositAddressResponses.every((x) => x.mintAddress === generateDepositAddressResponses[0].mintAddress)) {
       throw new Error('Consensus failure on mint address');
@@ -215,7 +215,7 @@ function isObject(x) {
 
       // Compute multisigDepositAddress.
       const { address: multisigDepositAddress, redeemScript } = await dingo.createMultisig(
-        networkSettings[network].authorityThreshold, depositAddresses
+        networkSettings.network.authorityThreshold, depositAddresses
       );
       try {
         await dingo.importAddress(redeemScript);
@@ -246,7 +246,7 @@ function isObject(x) {
     }
 
     // Retrieve deposited amount.
-    const depositedAmount = dingo.toSatoshi((await dingo.getReceivedAmountByAddress(networkSettings[network].depositConfirmations, depositAddress)).toString());
+    const depositedAmount = dingo.toSatoshi((await dingo.getReceivedAmountByAddress(networkSettings.network.depositConfirmations, depositAddress)).toString());
     const depositedAmountAfterTax = meetsTax(depositedAmount) ? amountAfterTax(depositedAmount) : 0n;
     const unconfirmedAmount = dingo.toSatoshi((await dingo.getReceivedAmountByAddress(0, depositAddress)).toString()) - depositedAmount;
     const unconfirmedAmountAfterTax = meetsTax(unconfirmedAmount) ? amountAfterTax(unconfirmedAmount) : 0n;
@@ -278,7 +278,7 @@ function isObject(x) {
     }
 
     // Retrieve deposited amount.
-    const depositedAmount = dingo.toSatoshi((await dingo.getReceivedAmountByAddress(networkSettings[network].depositConfirmations, depositAddress)).toString());
+    const depositedAmount = dingo.toSatoshi((await dingo.getReceivedAmountByAddress(networkSettings.network.depositConfirmations, depositAddress)).toString());
     const depositedAmountAfterTax = amountAfterTax(depositedAmount);
 
     // Retrieve minted amount.
@@ -352,32 +352,32 @@ function isObject(x) {
   }));
 
   app.post('/triggerReconfigurationEvent', createRateLimit(20, 1), asyncHandler(async (req, res) => {
-    if(!networkSettings[network].supportReconfiguration) {
+    if(!networkSettings.network.supportReconfiguration) {
       throw new Error("reconfiguration event does not have support from this node.")
     }
     if(RECONFIGURING) {
       throw new Error("re-configuration event is already underway.");
     }
     let ourNewAddresses = {addresses: []};
-    for(const x of networkSettings[network].authorityNodes) {
+    for(const x of networkSettings.network.authorityNodes) {
       ourNewAddresses["addresses"].push(x.newWalletAddress)
     }
     const data = req.body
-    await validateTimedAndSignedMessage(data, networkSettings[network].authorityNodes[networkSettings[network].payoutCoordinator].walletAddress);
+    await validateTimedAndSignedMessage(data, networkSettings.network.authorityNodes[networkSettings.network.payoutCoordinator].walletAddress);
     let result = 
     {
       msg: "",
-      configNonce: networkSettings[network].configurationNonce,
+      configNonce: networkSettings.network.configurationNonce,
       newAuthorityAddresses: ourNewAddresses.addresses,
-      newAuthorityThreshold: networkSettings[network].newAuthorityThreshold,
-      newMinBurnAmount: networkSettings[network].newMinBurnAmount,
+      newAuthorityThreshold: networkSettings.network.newAuthorityThreshold,
+      newMinBurnAmount: networkSettings.network.newMinBurnAmount,
     };
-    const signature = smartContract.signConfigure(smartContractSettings.chainId, networkSettings[network].configurationNonce, ourNewAddresses.addresses, networkSettings[network].newAuthorityThreshold, networkSettings[network].newMinBurnAmount)
+    const signature = smartContract.signConfigure(smartContractSettings.chainId, networkSettings.network.configurationNonce, ourNewAddresses.addresses, networkSettings.network.newAuthorityThreshold, networkSettings.network.newMinBurnAmount)
 
     if(
       JSON.stringify(ourNewAddresses["addresses"]) === JSON.stringify(data.data.addresses) &&
-      data.data.newAuthorityThreshold === networkSettings[network].newAuthorityThreshold &&
-      data.data.newMinBurnAmount === networkSettings[network].newMinBurnAmount
+      data.data.newAuthorityThreshold === networkSettings.network.newAuthorityThreshold &&
+      data.data.newMinBurnAmount === networkSettings.network.newMinBurnAmount
       ) {
       result["msg"] = "consensus pass";
       result["v"] = signature.v;
@@ -392,7 +392,7 @@ function isObject(x) {
     createRateLimit(5, 1),
     asyncHandler(async (req, res) => {
       const data = req.body;
-      await validateTimedAndSignedMessageOne(data, networkSettings[network].authorityNodes.map((x) => x.walletAddress));
+      await validateTimedAndSignedMessageOne(data, networkSettings.network.authorityNodes.map((x) => x.walletAddress));
       res.send({ log: await util.promisify(fs.readFile)('log.txt', 'utf8') });
     }));
 
@@ -405,12 +405,12 @@ function isObject(x) {
             version: version,
             height: height,
             time: (new Date()).getTime(),
-            networkSettings: networkSettings[network],
-            dingoSettings: networkSettings[network],
+            networkSettings: networkSettings.network,
+            dingoSettings: networkSettings.network,
             smartContractSettings: {
-              provider: networkSettings[network].provider,
-              chainId: networkSettings[network].chainId,
-              contractAddress: networkSettings[network].contractAddress
+              provider: networkSettings.network.provider,
+              chainId: networkSettings.network.chainId,
+              contractAddress: networkSettings.network.contractAddress
             },
             confirmedDeposits: {},
             unconfirmedDeposits: {},
@@ -443,7 +443,7 @@ function isObject(x) {
             output.totalApprovedTax = totalApprovedTax;
             output.remainingApprovableTax = remainingApprovableTax;
           };
-          await computeDeposits(networkSettings[network].depositConfirmations, stats.confirmedDeposits);
+          await computeDeposits(networkSettings.network.depositConfirmations, stats.confirmedDeposits);
           await computeDeposits(0, stats.unconfirmedDeposits);
 
           // Process withdrawals.
@@ -470,12 +470,12 @@ function isObject(x) {
 
           // Process UTXOs.
           const computeUtxos = async (changeConfirmations, depositConfirmations, output) => {
-            const changeUtxos = await dingo.listUnspent(changeConfirmations, [networkSettings[network].changeAddress]);
+            const changeUtxos = await dingo.listUnspent(changeConfirmations, [networkSettings.network.changeAddress]);
             const depositUtxos = await dingo.listUnspent(depositConfirmations, depositAddresses.map((x) => x.depositAddress));
             output.totalChangeBalance = changeUtxos.reduce((a, b) => a + BigInt(dingo.toSatoshi(b.amount.toString())), 0n).toString();
             output.totalDepositsBalance = depositUtxos.reduce((a, b) => a + BigInt(dingo.toSatoshi(b.amount.toString())), 0n).toString();
           };
-          await computeUtxos(networkSettings[network].changeConfirmations, networkSettings[network].depositConfirmations, stats.confirmedUtxos);
+          await computeUtxos(networkSettings.network.changeConfirmations, networkSettings.network.depositConfirmations, stats.confirmedUtxos);
           await computeUtxos(0, 0, stats.unconfirmedUtxos);
         }
         res.send(await createTimedAndSignedMessage(stats));
@@ -495,7 +495,7 @@ function isObject(x) {
 
     // Compute tax from deposits.
     if (processDeposits) {
-      const deposited = await dingo.listReceivedByAddress(networkSettings[network].depositConfirmations);
+      const deposited = await dingo.listReceivedByAddress(networkSettings.network.depositConfirmations);
       const nonEmptyMintDepositAddresses = (await database.getMintDepositAddresses(Object.keys(deposited)));
       for (const a of nonEmptyMintDepositAddresses) {
         const depositedAmount = dingo.toSatoshi(deposited[a.depositAddress].amount.toString());
@@ -549,7 +549,7 @@ function isObject(x) {
   app.post('/computePendingPayouts',
     createRateLimit(5, 1),
     asyncHandler(async (req, res) => {
-      const data = await validateTimedAndSignedMessageOne(req.body, networkSettings[network].authorityNodes.map((x) => x.walletAddress));
+      const data = await validateTimedAndSignedMessageOne(req.body, networkSettings.network.authorityNodes.map((x) => x.walletAddress));
       res.send(await createTimedAndSignedMessage(await computePendingPayouts(data.processDeposits, data.processWithdrawals)));
     }));
 
@@ -562,7 +562,7 @@ function isObject(x) {
     }
 
     // Check if requested tax from deposits does not exceed taxable.
-    const deposited = await dingo.listReceivedByAddress(networkSettings[network].depositConfirmations);
+    const deposited = await dingo.listReceivedByAddress(networkSettings.network.depositConfirmations);
     const depositAddresses = {};
     (await database.getMintDepositAddresses(Object.keys(deposited))).forEach((x) => depositAddresses[x.depositAddress] = x);
 
@@ -621,17 +621,17 @@ function isObject(x) {
 
   // Computes UTXOs among deposits and change.
   const computeUnspent = async () => {
-    const changeUtxos = await dingo.listUnspent(networkSettings[network].changeConfirmations, [networkSettings[network].changeAddress]);
-    const deposited = await dingo.listReceivedByAddress(networkSettings[network].depositConfirmations);
+    const changeUtxos = await dingo.listUnspent(networkSettings.network.changeConfirmations, [networkSettings.network.changeAddress]);
+    const deposited = await dingo.listReceivedByAddress(networkSettings.network.depositConfirmations);
     const nonEmptyMintDepositAddresses = (await database.getMintDepositAddresses(Object.keys(deposited)));
-    const depositUtxos = await dingo.listUnspent(networkSettings[network].depositConfirmations, nonEmptyMintDepositAddresses.map((x) => x.depositAddress));
+    const depositUtxos = await dingo.listUnspent(networkSettings.network.depositConfirmations, nonEmptyMintDepositAddresses.map((x) => x.depositAddress));
     return changeUtxos.concat(depositUtxos);
   };
 
   app.post('/computeUnspent',
     createRateLimit(5, 1),
     asyncHandler(async (req, res) => {
-      const data = await validateTimedAndSignedMessageOne(req.body, networkSettings[network].authorityNodes.map((x) => x.walletAddress));
+      const data = await validateTimedAndSignedMessageOne(req.body, networkSettings.network.authorityNodes.map((x) => x.walletAddress));
       res.send(await createTimedAndSignedMessage({ unspent: await computeUnspent() }));
     }));
 
@@ -672,8 +672,8 @@ function isObject(x) {
     if (totalTax < networkFee) {
       throw new Error(`Insufficient tax for network fee of ${networkFee}`);
     }
-    const taxPayoutPerPayee = (totalTax - networkFee) / BigInt(networkSettings[network].taxPayoutAddresses.length);
-    for (const a of networkSettings[network].taxPayoutAddresses) {
+    const taxPayoutPerPayee = (totalTax - networkFee) / BigInt(networkSettings.network.taxPayoutAddresses.length);
+    for (const a of networkSettings.network.taxPayoutAddresses) {
       if (a in vouts) {
         vouts[a] += taxPayoutPerPayee;
       } else {
@@ -691,10 +691,10 @@ function isObject(x) {
       throw new Error('Insufficient funds');
     }
     if (change > 0) {
-      if (networkSettings[network].changeAddress in vouts) {
-        vouts[networkSettings[network].changeAddress] += change;
+      if (networkSettings.network.changeAddress in vouts) {
+        vouts[networkSettings.network.changeAddress] += change;
       } else {
-        vouts[networkSettings[network].changeAddress] = change;
+        vouts[networkSettings.network.changeAddress] = change;
       }
     }
 
@@ -738,7 +738,7 @@ function isObject(x) {
       await acquire(async () => {
         // Extract info.
         let { depositTaxPayouts, withdrawalPayouts, withdrawalTaxPayouts, unspent, approvalChain } =
-          await validateTimedAndSignedMessage(req.body, networkSettings[network].authorityNodes[networkSettings[network].payoutCoordinator].walletAddress);
+          await validateTimedAndSignedMessage(req.body, networkSettings.network.authorityNodes[networkSettings.network.payoutCoordinator].walletAddress);
 
         // Validate unspent.
         await validateUnspent(unspent);
@@ -775,7 +775,7 @@ function isObject(x) {
   app.post('/dumpDatabase',
     async (req, res) => {
       const data = req.body;
-      await validateTimedAndSignedMessageOne(data, networkSettings[network].authorityNodes.map((x) => x.walletAddress));
+      await validateTimedAndSignedMessageOne(data, networkSettings.network.authorityNodes.map((x) => x.walletAddress));
       res.send({ sql: await database.dump(databaseSettings.databasePath) });
     });
 
@@ -783,7 +783,7 @@ function isObject(x) {
   app.post('/dingoDoesAHarakiri',
     async (req, res) => {
       const data = req.body;
-      await validateTimedAndSignedMessageOne(data, networkSettings[network].authorityNodes.map((x) => x.walletAddress));
+      await validateTimedAndSignedMessageOne(data, networkSettings.network.authorityNodes.map((x) => x.walletAddress));
       console.log(`TERMINATING! Suicide signal received from ${req.header('x-forwarded-for')}`);
       res.send();
       server.close();
