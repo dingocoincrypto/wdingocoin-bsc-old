@@ -474,7 +474,8 @@ function isObject(x) {
           // Process UTXOs.
           const computeUtxos = async (changeConfirmations, depositConfirmations, output) => {
             console.log("a")
-            const changeUtxos = await dingo.listUnspent(changeConfirmations, [networkSettings[network].changeAddress]);
+            console.log(networkSettings[network].changeAddress)
+            const changeUtxos = await dingo.listUnspent(changeConfirmations, [networkSettings[network].dingoNetworkChangeAddress]);
             console.log("b")
 
             const depositUtxos = await dingo.listUnspent(depositConfirmations, depositAddresses.map((x) => x.depositAddress));
@@ -635,7 +636,7 @@ function isObject(x) {
 
   // Computes UTXOs among deposits and change.
   const computeUnspent = async () => {
-    const changeUtxos = await dingo.listUnspent(networkSettings[network].changeConfirmations, [networkSettings[network].changeAddress]);
+    const changeUtxos = await dingo.listUnspent(networkSettings[network].changeConfirmations, [networkSettings[network].dingoNetworkChangeAddress]);
     const deposited = await dingo.listReceivedByAddress(networkSettings[network].depositConfirmations);
     const nonEmptyMintDepositAddresses = (await database.getMintDepositAddresses(Object.keys(deposited)));
     const depositUtxos = await dingo.listUnspent(networkSettings[network].depositConfirmations, nonEmptyMintDepositAddresses.map((x) => x.depositAddress));
@@ -706,9 +707,9 @@ function isObject(x) {
     }
     if (change > 0) {
       if (networkSettings[network].changeAddress in vouts) {
-        vouts[networkSettings[network].changeAddress] += change;
+        vouts[networkSettings[network].dingoNetworkChangeAddress] += change;
       } else {
-        vouts[networkSettings[network].changeAddress] = change;
+        vouts[networkSettings[network].dingoNetworkChangeAddress] = change;
       }
     }
 
