@@ -657,8 +657,8 @@ Available commands:
       } else {
         networkSettingsFlattened.push([
           i,
-          stat.networkSettings.payoutCoordinator.toString(),
-          stat.networkSettings.authorityThreshold.toString(),
+          stat.networkSettings.payoutCoordinator,
+          stat.networkSettings.authorityThreshold,
           stat.networkSettings.authorityNodes.map((x) => `${x.hostname}:8443\\${x.walletAddress}`).join(' '),
           stat.networkSettings.walletAddress
         ]);
