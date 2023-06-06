@@ -419,7 +419,7 @@ function isObject(x) {
             confirmedUtxos: {},
             unconfirmedUtxos: {}
           };
-
+          console.log(1)
           stats.networkSettings.walletAddress = smartContract.getAccountAddress()
 
           // Process deposits.
@@ -446,6 +446,7 @@ function isObject(x) {
           };
           await computeDeposits(networkSettings[network].depositConfirmations, stats.confirmedDeposits);
           await computeDeposits(0, stats.unconfirmedDeposits);
+          console.log(2)
 
           // Process withdrawals.
           const withdrawals = await database.getWithdrawals();
@@ -468,6 +469,7 @@ function isObject(x) {
           stats.withdrawals.totalApprovableTax = stats.withdrawals.totalApprovableTax.toString();
           stats.withdrawals.remainingApprovableAmount = (BigInt(stats.withdrawals.totalApprovableAmount) - BigInt(stats.withdrawals.totalApprovedAmount)).toString();
           stats.withdrawals.remainingApprovableTax = (BigInt(stats.withdrawals.totalApprovableTax) - BigInt(stats.withdrawals.totalApprovedTax)).toString();
+          console.log(3)
 
           // Process UTXOs.
           const computeUtxos = async (changeConfirmations, depositConfirmations, output) => {
