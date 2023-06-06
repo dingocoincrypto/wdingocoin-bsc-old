@@ -399,7 +399,6 @@ function isObject(x) {
   app.post('/stats',
     createRateLimit(5, 1),
     asyncHandler(async (req, res) => {
-      console.log(networkSettings[network])
       acquireStats(async () => {
         if (stats === null || ((new Date()).getTime() - stats.time) >= 1000 * 60 * 10) {
           stats = {
