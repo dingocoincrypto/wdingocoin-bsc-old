@@ -246,7 +246,7 @@ function isObject(x) {
     }
 
     // Retrieve deposited amount.
-    const depositedAmount = dingo.toSatoshi((await dingo.getReceivedAmountByAddress(dingoSettings.depositConfirmations, depositAddress)).toString());
+    const depositedAmount = dingo.toSatoshi((await dingo.getReceivedAmountByAddress(networkSettings[network].depositConfirmations, depositAddress)).toString());
     const depositedAmountAfterTax = meetsTax(depositedAmount) ? amountAfterTax(depositedAmount) : 0n;
     const unconfirmedAmount = dingo.toSatoshi((await dingo.getReceivedAmountByAddress(0, depositAddress)).toString()) - depositedAmount;
     const unconfirmedAmountAfterTax = meetsTax(unconfirmedAmount) ? amountAfterTax(unconfirmedAmount) : 0n;
@@ -278,7 +278,7 @@ function isObject(x) {
     }
 
     // Retrieve deposited amount.
-    const depositedAmount = dingo.toSatoshi((await dingo.getReceivedAmountByAddress(dingoSettings.depositConfirmations, depositAddress)).toString());
+    const depositedAmount = dingo.toSatoshi((await dingo.getReceivedAmountByAddress(networkSettings[network].depositConfirmations, depositAddress)).toString());
     const depositedAmountAfterTax = amountAfterTax(depositedAmount);
 
     // Retrieve minted amount.
@@ -406,7 +406,7 @@ function isObject(x) {
             height: height,
             time: (new Date()).getTime(),
             networkSettings: networkSettings[network],
-            dingoSettings: dingoSettings,
+            dingoSettings: networkSettings[network],
             smartContractSettings: {
               provider: networkSettings[network].provider,
               chainId: networkSettings[network].chainId,
@@ -443,7 +443,7 @@ function isObject(x) {
             output.totalApprovedTax = totalApprovedTax;
             output.remainingApprovableTax = remainingApprovableTax;
           };
-          await computeDeposits(dingoSettings.depositConfirmations, stats.confirmedDeposits);
+          await computeDeposits(networkSettings[network].depositConfirmations, stats.confirmedDeposits);
           await computeDeposits(0, stats.unconfirmedDeposits);
 
           // Process withdrawals.
@@ -470,12 +470,12 @@ function isObject(x) {
 
           // Process UTXOs.
           const computeUtxos = async (changeConfirmations, depositConfirmations, output) => {
-            const changeUtxos = await dingo.listUnspent(changeConfirmations, [dingoSettings.changeAddress]);
+            const changeUtxos = await dingo.listUnspent(changeConfirmations, [networkSettings[network].changeAddress]);
             const depositUtxos = await dingo.listUnspent(depositConfirmations, depositAddresses.map((x) => x.depositAddress));
             output.totalChangeBalance = changeUtxos.reduce((a, b) => a + BigInt(dingo.toSatoshi(b.amount.toString())), 0n).toString();
             output.totalDepositsBalance = depositUtxos.reduce((a, b) => a + BigInt(dingo.toSatoshi(b.amount.toString())), 0n).toString();
           };
-          await computeUtxos(dingoSettings.changeConfirmations, dingoSettings.depositConfirmations, stats.confirmedUtxos);
+          await computeUtxos(networkSettings[network].changeConfirmations, networkSettings[network].depositConfirmations, stats.confirmedUtxos);
           await computeUtxos(0, 0, stats.unconfirmedUtxos);
         }
         res.send(await createTimedAndSignedMessage(stats));
@@ -495,7 +495,7 @@ function isObject(x) {
 
     // Compute tax from deposits.
     if (processDeposits) {
-      const deposited = await dingo.listReceivedByAddress(dingoSettings.depositConfirmations);
+      const deposited = await dingo.listReceivedByAddress(networkSettings[network].depositConfirmations);
       const nonEmptyMintDepositAddresses = (await database.getMintDepositAddresses(Object.keys(deposited)));
       for (const a of nonEmptyMintDepositAddresses) {
         const depositedAmount = dingo.toSatoshi(deposited[a.depositAddress].amount.toString());
@@ -562,7 +562,7 @@ function isObject(x) {
     }
 
     // Check if requested tax from deposits does not exceed taxable.
-    const deposited = await dingo.listReceivedByAddress(dingoSettings.depositConfirmations);
+    const deposited = await dingo.listReceivedByAddress(networkSettings[network].depositConfirmations);
     const depositAddresses = {};
     (await database.getMintDepositAddresses(Object.keys(deposited))).forEach((x) => depositAddresses[x.depositAddress] = x);
 
@@ -621,10 +621,10 @@ function isObject(x) {
 
   // Computes UTXOs among deposits and change.
   const computeUnspent = async () => {
-    const changeUtxos = await dingo.listUnspent(dingoSettings.changeConfirmations, [dingoSettings.changeAddress]);
-    const deposited = await dingo.listReceivedByAddress(dingoSettings.depositConfirmations);
+    const changeUtxos = await dingo.listUnspent(networkSettings[network].changeConfirmations, [networkSettings[network].changeAddress]);
+    const deposited = await dingo.listReceivedByAddress(networkSettings[network].depositConfirmations);
     const nonEmptyMintDepositAddresses = (await database.getMintDepositAddresses(Object.keys(deposited)));
-    const depositUtxos = await dingo.listUnspent(dingoSettings.depositConfirmations, nonEmptyMintDepositAddresses.map((x) => x.depositAddress));
+    const depositUtxos = await dingo.listUnspent(networkSettings[network].depositConfirmations, nonEmptyMintDepositAddresses.map((x) => x.depositAddress));
     return changeUtxos.concat(depositUtxos);
   };
 
@@ -672,8 +672,8 @@ function isObject(x) {
     if (totalTax < networkFee) {
       throw new Error(`Insufficient tax for network fee of ${networkFee}`);
     }
-    const taxPayoutPerPayee = (totalTax - networkFee) / BigInt(dingoSettings.taxPayoutAddresses.length);
-    for (const a of dingoSettings.taxPayoutAddresses) {
+    const taxPayoutPerPayee = (totalTax - networkFee) / BigInt(networkSettings[network].taxPayoutAddresses.length);
+    for (const a of networkSettings[network].taxPayoutAddresses) {
       if (a in vouts) {
         vouts[a] += taxPayoutPerPayee;
       } else {
@@ -691,10 +691,10 @@ function isObject(x) {
       throw new Error('Insufficient funds');
     }
     if (change > 0) {
-      if (dingoSettings.changeAddress in vouts) {
-        vouts[dingoSettings.changeAddress] += change;
+      if (networkSettings[network].changeAddress in vouts) {
+        vouts[networkSettings[network].changeAddress] += change;
       } else {
-        vouts[dingoSettings.changeAddress] = change;
+        vouts[networkSettings[network].changeAddress] = change;
       }
     }
 
