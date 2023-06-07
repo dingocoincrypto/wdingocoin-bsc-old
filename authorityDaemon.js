@@ -424,7 +424,6 @@ function isObject(x) {
           const depositAddresses = await database.getMintDepositAddresses();
           const computeDeposits = async (confirmations, output) => {
             output.count = depositAddresses.length;
-            console.log(depositAddresses)
             const depositedAmounts = await dingo.getReceivedAmountByAddresses(confirmations, depositAddresses.map((x) => x.depositAddress));
             const totalDepositedAmount = Object.values(depositedAmounts).reduce((a, b) => a + BigInt(dingo.toSatoshi(b.toString())), 0n).toString();
             const totalApprovableTax = Object.values(depositedAmounts).reduce((a, b) => {
