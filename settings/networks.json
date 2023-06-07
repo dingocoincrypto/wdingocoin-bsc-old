@@ -100,5 +100,45 @@
             "nUrY89eYG4xbFn8gi1PHsB5t5bEqkz9EXm",
             "ningmRT3CCtN3g9WafaDYoStWtgc4AeifW"
           ]
-    }
+    },
+    "mumbai-solo": {
+      "provider": "https://rpc-mumbai.maticvigil.com/",
+      "supportReconfiguration": false,
+      "configurationNonce": 0,
+      "authorityThreshold": 3,
+      "minBurnAmount": 1000000000,
+      "newAuthorityThreshold": 3,
+      "newMinBurnAmount": 1000000000,
+      "authorityNodes": [
+          {
+            "hostname": "n500.dingocoin.com",
+            "walletAddress": "0xb1B323740a8E7D13AF10839b121e22083Da23Ac1",
+            "newWalletAddress": "0x"
+          },
+          {
+            "hostname": "n501.dingocoin.com",
+            "walletAddress": "0x31d75dB9eC7F1aBE2905fb590a4E41401F837C05",
+            "newWalletAddress": "0x"
+          },
+          {
+            "hostname": "n502.dingocoin.com",
+            "walletAddress": "0x9C1844FFD3fb0E2c397D6510d3dCf3E2f77f47A2",
+            "newWalletAddress": "0x"
+          },
+          {
+            "hostname": "n503.dingocoin.com",
+            "walletAddress": "0xb37F35DAfd8E5050CC80D9E262ad0176aD19483D",
+            "newWalletAddress": "0x"
+          }
+        ],
+        "chainId": 80001,
+        "contractAddress": "0x42134212af4e5277702da9317a77d7f3db722ba3",
+        "dingoNetworkChangeAddress": "2N7Ep69KEZ2iE1giyAhL6551HS24PQCyxoN",
+        "changeConfirmations": 2,
+        "depositConfirmations": 2,
+        "payoutCoordinator": 0,
+        "taxPayoutAddresses": [
+          "nh2vKH1hySAVMBrfCtBXe2drLVGC3mCDnv"
+        ]
+  }
 }
